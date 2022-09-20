@@ -1,0 +1,194 @@
+\documentclass[11pt]{elegantbook}
+
+\title{Theoretical Problems}
+\subtitle{Numerical analysis 2022}
+
+\author{Wenchong Huang (EbolaEmperor)}
+\institute{School of Mathematical Science, Zhejiang University}
+\date{September 20th, 2022}
+
+\extrainfo{ Elegantly learning. }
+
+\logo{logo-blue.png}
+\cover{cover.jpg}
+
+% modify the color in the middle of titlepage
+\definecolor{customcolor}{RGB}{32,178,170}
+\colorlet{coverlinecolor}{customcolor}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+% \tableofcontents
+
+\mainmatter
+
+\chapter{Solving Nonlinear Equations}
+
+\begin{problem}
+  Consider the bisection method starting with the initial interval $[1.5,3.5]$. In the following questions "the interval" refers to the bisection interval whose width changes across different loops.
+  \begin{itemize}
+    \item What is the width of the interval at the $n$th step?
+    \item What is the maximum possible distance between the root $r$ and the midpoint of the interval?
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  Note that the interval's width is multipled by $\frac{1}{2}$ at each step, and the initial width is $2$, hence the width \textbf{after} the $n$th step is $\frac{1}{2^{n-1}}$.
+  
+  The maximum distance is not grater than $1$ obviously.
+
+  Since the loop terminated when $|f(c)|<\varepsilon$, we could construct an increasing function $f$ whose root is $1.5+\delta$, and $|f(x)|<\varepsilon$ everywhere, hence the bisection loop will terminate at first step, the distance between midpoint and root is $1-\delta$. Let $\delta\to 0^+$, we know the distance could be infynitely close to $1$.
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  In using the bisection algorithm with its initial interval as $[a_0,b_0]$ with $a_0>0$, we want to determine the root with its relative error no grater than $\varepsilon$. Prove that this goal of accuracy is guaranteed by the following choice of the number of steps,
+  \begin{equation*}
+    n\geq\frac{\log(b_0-a_0)-\log\varepsilon-\log a_0}{\log 2}-1
+  \end{equation*}
+\end{problem}
+
+\begin{solution}
+  Suppose the root is $r\geq a_0$. The relative error \textbf{after} the $n$th step is
+  \begin{equation}
+    \frac{|r-c_n|}{|r|}
+  \end{equation}
+  
+  The following inequations hold
+  \begin{equation}
+    \frac{|r-c_n|}{|r|} \leq \frac{\frac{1}{2}(b_n-a_n)}{r} \leq \frac{\frac{1}{2}(b_n-a_n)}{a_0} = \frac{b_0-a_0}{a_0 2^{n+1}}
+  \end{equation}
+
+  Hence when (1.1) holds, we have
+  \begin{align*}
+   & (n+1)\log 2 \geq \log(b_0-a_0) -\log\varepsilon -\log a_0\\
+  \implies & \log 2^{n+1} \geq \log \left(\frac{b_0-a_0}{\varepsilon a_0}\right)\\
+  \implies & 2^{n+1} \geq \frac{b_0-a_0}{\varepsilon a_0} \implies \frac{b_0-a_0}{a_0 2^{n+1}} \leq \varepsilon
+  \end{align*}
+
+  Hence the conclution is proved by (1.2).
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Perform four iterations of Newton's method for the polynomial equation $p(x)=4x^3-2x^2+3=0$ with the starting point $x_0=-1$. Use a hand calculator and organize results of the iterations in a table.
+\end{problem}
+
+\begin{solution}
+Firstly we derivate $p(x)$
+\begin{equation*}
+  p'(x)=12x^2-4x
+\end{equation*}
+
+The results are shown as the following table.
+  \begin{table}[htbp]
+    \centering
+    \small
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{$n$} & \textbf{$x_n$} & \textbf{$p(x_n)$} & \textbf{$p'(x_n)$} & \textbf{$x_n-\frac{f(x_n)}{f'(x_n)}$} \\ \hline
+    \textbf{0}   & -1             & -3                & 16                 & -0.8125                               \\ \hline
+    \textbf{1}   & -0.8125        & -0.46582          & 11.1719            & -0.770804                             \\ \hline
+    \textbf{2}   & -0.770804      & -0.0201359        & 10.2129            & -0.768832                             \\ \hline
+    \textbf{3}   & -0.768832      & -3.98011e-05      & 10.1686            & -0.768828                             \\ \hline
+    \textbf{4}   & -0.768828      &                   &                    &                                       \\ \hline
+    \end{tabular}
+  \end{table}
+\end{solution}
+
+\begin{problem}
+  Consider a variation of Newton's method in which only the derivative at $x_0$ is used,
+  \begin{equation}
+    x_{n+1}=x_n-\frac{f(x_n)}{f'(x_0)}
+  \end{equation}
+
+  Find $C$ and $s$ such that
+  \begin{equation*}
+    e_{n+1}=Ce_n^2
+  \end{equation*}
+
+  where $e_n$ is the error of Newton's method at step $n$, $s$ is a constant, and $C$ may depend on $x_n$, the given function $f$ and its derivatives.
+\end{problem}
+
+\begin{solution}
+  Assume the root is $r$, then $e_n=x_n-r$. Let $g(x)=f(r+x)$. By (1.3), we derive 
+  \begin{equation*}
+    e_{n+1}=e_n-\frac{g(e_n)}{g'(e_0)}=\left(1-\frac{g(e_n)}{e_n g'(e_0)}\right)e_n
+  \end{equation*}
+
+  Let $C(n)=1-\frac{g(e_n)}{e_n g'(e_0)}$ and $s=1$, we got $e_{n+1}=C(n)e_n$, and 
+  \begin{equation*}
+    \lim_{n\to \infty} C(n) = 1-\frac{g'(0)}{g'(e_0)}= 1-\frac{f'(r)}{f'(x_0)}
+  \end{equation*}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Within $\left(-\frac{\pi}{2},\frac{\pi}{2}\right)$, will the iteration $x_{n+1}=\tan^{-1} x_n$ converge?
+\end{problem}
+\begin{solution}
+  As we all know that $0<\tan^{-1} x < x \;(x>0)$, so if $x_0>0$, we derive
+  \begin{equation*}
+    0<x_{n+1}=\tan^{-1} x_n < x_n
+  \end{equation*}
+
+  And sequence $\{x_n\}$ has lower bound $0$, so $\{x_n\}$ is convergent by monotinic sequence theorem.
+
+  For $x_0<0$, $\{-x_n\}$ is convergent by the discussion above, hence $\{x_n\}$ is convergent.
+
+  For $x_0=0$, clearly $x_n=0\;(\forall n)$.
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Let $p>1$. What is the value of the following continued fraction?
+  \begin{equation*}
+    x=\frac{1}{p+\frac{1}{p+\frac{1}{p+\cdots}}}
+  \end{equation*}
+
+  Prove that the sequence of values converges.
+\end{problem}
+
+\begin{solution}
+  We construct a sequence by $x_1=\frac{1}{p}$ and $x_{n+1}=\frac{1}{1+x_n}\;(n\geq 1)$, then $x=\lim\limits_{n\to\infty} x_n$ if it exists.
+
+  Consider function $g(x)=\frac{1}{1+x}$, clearly $g(x)\in[0,1]$ for all $x\in[0,1]$. And
+  \begin{equation*}
+    \lambda = \max_{x\in[0,1]} |g'(x)| = \max_{x\in[0,1]} \log(x+1) = \log 2 < 1
+  \end{equation*}
+
+  Hence $g$ is a contraction in $[0,1]$, and consider equation
+  \begin{equation*}
+    x=g(x)=\frac{1}{1+x}
+  \end{equation*}
+
+  the roots are $\frac{-1\pm\sqrt{5}}{2}$, hence $\alpha=\frac{-1+\sqrt{5}}{2}$ is the unique root in $[0,1]$, i.e. $g$ has unique fixed-point in $[0,1]$.
+
+  Recall that $x_1=\frac{1}{p}\in[0,1]$, and $x_{n+1}=g(x_n)$. By Theorem 1.38, $\{x_n\}$ converges and $x=\lim\limits_{n\to\infty} x_n=\alpha$. 
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  What happens in problem 1.2 if $a_0<0<b_0$? Derive an inequality of the number of steps similar to that in problem 1.2. In this case, is the relative error still an appropriate measure?
+\end{problem}
+
+\begin{solution}
+  In this problem we let the absolutely error $|r-c_n|<\delta$, we derive
+  \begin{equation}
+    |r-c_n| \leq \frac{1}{2}(b_n-a_n) = \frac{b_0-a_0}{2^{n+1}}
+  \end{equation}
+
+  It is sufficient to let $\frac{b_0-a_0}{2^{n+1}}<\delta$, hence $n\geq \frac{\log(b_0-a_0)-\log \delta}{\log 2}-1$.
+
+  We can't use relative error since $r$ might be zero.
+\end{solution}
+
+\end{document}
