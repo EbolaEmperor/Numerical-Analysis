@@ -157,19 +157,19 @@ The results are shown as the following table.
 \end{problem}
 
 \begin{solution}
-  We construct a sequence by $x_1=\frac{1}{p}$ and $x_{n+1}=\frac{1}{1+x_n}\;(n\geq 1)$, then $x=\lim\limits_{n\to\infty} x_n$ if it exists.
+  We construct a sequence by $x_1=\frac{1}{p}$ and $x_{n+1}=\frac{1}{p+x_n}\;(n\geq 1)$, then $x=\lim\limits_{n\to\infty} x_n$ if it exists.
 
-  Consider function $g(x)=\frac{1}{1+x}$, clearly $g(x)\in[0,1]$ for all $x\in[0,1]$. And
+  Consider function $g(x)=\frac{1}{p+x}$, clearly $g(x)\in[0,1]$ for all $x\in[0,1]$. And
   \begin{equation*}
-    \lambda = \max_{x\in[0,1]} |g'(x)| = \max_{x\in[0,1]} \log(x+1) = \log 2 < 1
+    \lambda = \max_{x\in[0,1]} |g'(x)| = \max_{x\in[0,1]} -\frac{1}{(x+p)^2} = \frac{1}{p^2} < 1
   \end{equation*}
 
   Hence $g$ is a contraction in $[0,1]$, and consider equation
   \begin{equation*}
-    x=g(x)=\frac{1}{1+x}
+    x=g(x)=\frac{1}{p+x}
   \end{equation*}
 
-  the roots are $\frac{-1\pm\sqrt{5}}{2}$, hence $\alpha=\frac{-1+\sqrt{5}}{2}$ is the unique root in $[0,1]$, i.e. $g$ has unique fixed-point in $[0,1]$.
+  the roots are $\frac{-p\pm\sqrt{p^2+4}}{2}$, hence $g$ has unique fixed-point $\alpha=\frac{-p+\sqrt{p^2+4}}{2}$ in $[0,1]$.
 
   Recall that $x_1=\frac{1}{p}\in[0,1]$, and $x_{n+1}=g(x_n)$. By Theorem 1.38, $\{x_n\}$ converges and $x=\lim\limits_{n\to\infty} x_n=\alpha$. 
 \end{solution}
