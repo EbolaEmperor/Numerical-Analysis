@@ -10,15 +10,11 @@ const double _epsL = 10 * std::numeric_limits<double>::epsilon();
 // 函数虚类，实体函数需要继承此类，并定义()运算，子类可以定义diff为导函数，若不定义，则diff默认采用差商代替导数的方法
 class Function{
 public:
-    virtual double operator () (const double &x) const{
-        return 0.0;
-    }
+    virtual double operator () (const double &x) const = 0;
     virtual double diff (const double &x) const{
         return ((*this)(x+_epsL)-(*this)(x-_epsL)) / (2*_epsL);
     }
 };
-
-Function baseF;
 
 class EquationSolver{
 public:
@@ -34,7 +30,6 @@ private:
     int M;
 
 public:
-    BisectionSolver(): f(baseF){}
     BisectionSolver(Function & f, double a, double b, double delta, double eps, int M):
         f(f), a(a), b(b), delta(delta), eps(eps), M(M) {}
     double solve(){
@@ -69,7 +64,6 @@ private:
     int M;
 
 public:
-    NewtonSolver(): f(baseF) {}
     NewtonSolver(Function & f, double x0, double eps, int M):
         f(f), x0(x0), eps(eps), M(M) {}
     double solve(){
@@ -101,7 +95,6 @@ private:
     int M;
 
 public:
-    SecandSolver(): f(baseF){}
     SecandSolver(Function & f, double x0, double x1, double delta, double eps, int M):
         f(f), x0(x0), x1(x1), delta(delta), eps(eps), M(M) {}
     double solve(){
