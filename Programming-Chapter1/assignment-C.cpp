@@ -14,9 +14,9 @@ public:
 } f;
 
 int main(){
-    NewtonSolver solver1(f, 4.5, eps, 50);
+    NewtonSolver solver1(f, 4.5, eps, 500);
     double ans1 = solver1.solve();
-    NewtonSolver solver2(f, 7.7, eps, 50);
+    NewtonSolver solver2(f, 7.7, eps, 500);
     double ans2 = solver2.solve();
     return 0;
 }
