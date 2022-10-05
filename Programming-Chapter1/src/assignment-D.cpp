@@ -16,6 +16,8 @@ public:
 void test1(){
     SecandSolver solver(func1, 0, pi/2, eps, eps, 100);
     double ans = solver.solve();
+    SecandSolver solver2(func1, 5.2*pi, 5.5*pi, eps, eps, 100);
+    double ans2 = solver2.solve();
 }
 
 //--------------------test2--------------------------------
@@ -30,6 +32,8 @@ public:
 void test2(){
     SecandSolver solver(func2, 1.0, 1.4, eps, eps, 100);
     double ans = solver.solve();
+    SecandSolver solver2(func2, -1.4, -1.5, eps, eps, 100);
+    double ans2 = solver2.solve();
 }
 
 //--------------------test3--------------------------------
@@ -44,6 +48,10 @@ public:
 void test3(){
     SecandSolver solver(func3, 0, -0.5, eps, eps, 100);
     double ans = solver.solve();
+    SecandSolver solver2(func3, 0, 0.5, eps, eps, 100);
+    double ans2 = solver2.solve();
+    SecandSolver solver3(func3, 10, 11, eps, eps, 100);
+    double ans3 = solver3.solve();
 }
 
 int main(){

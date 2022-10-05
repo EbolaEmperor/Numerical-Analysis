@@ -52,6 +52,7 @@ public:
         std::cerr << "Approxiate Root: " << c << std::endl;
         std::cerr << "Function Value: " << f(c) << std::endl;
         std::cerr << "Final Interval Length: " << b-a << std::endl;
+        std::cerr << "------------------------------------------------------" << std::endl;
 #endif
         return c;
     }
@@ -83,6 +84,7 @@ public:
         std::cerr << "Approxiate Root: " << x << std::endl;
         std::cerr << "Function Value: " << f(x) << std::endl;
         std::cerr << "Derivative Value: " << f.diff(x) << std::endl;
+        std::cerr << "------------------------------------------------------" << std::endl;
 #endif
         return x;
     }
@@ -119,6 +121,7 @@ public:
         std::cerr << "Approxiate Root: " << x1 << std::endl;
         std::cerr << "Function Value: " << f(x1) << std::endl;
         std::cerr << "|x(n) - x(n-1)|: " << fabs(x1-x0) << std::endl;
+        std::cerr << "------------------------------------------------------" << std::endl;
 #endif
         return x1;
     }

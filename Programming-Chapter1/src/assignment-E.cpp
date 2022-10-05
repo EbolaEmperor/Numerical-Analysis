@@ -2,7 +2,7 @@
 #include <limits>
 
 const double pi = acos(-1);
-const double eps = 1e-6;
+const double eps = 1e-2;
 
 const double L = 10, r = 1, V = 12.4;
 
