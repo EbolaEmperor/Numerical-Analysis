@@ -46,7 +46,7 @@ void test3(){
     double ans = solver.solve();
 }
 
-//--------------------test1--------------------------------
+//--------------------test4--------------------------------
 
 class Func4 : public Function{
 public:
