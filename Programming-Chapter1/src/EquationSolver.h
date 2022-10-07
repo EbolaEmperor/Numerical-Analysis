@@ -18,9 +18,7 @@ public:
 
 class EquationSolver{
 public:
-    virtual double solve(){
-        return 0.0;
-    }
+    virtual double solve() = 0;
 };
 
 class BisectionSolver : public EquationSolver{
