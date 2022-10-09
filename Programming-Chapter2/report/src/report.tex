@@ -22,6 +22,83 @@
 
 Enter the folder \verb|Programming-Chapter2/src| with terminal, \verb |make| here, you will see some executable files whose names are corresponding assignments. Run them directly and you will see the results.
 
+\section{Mannual}
+
+This package is for Newton's polynomial interpolation.
+
+\subsection{Initializing}
+
+You should include the header \verb|interpolation.h|, then define your function object as a derived class of \verb|Function|. Here is an example where $f(x)=\frac{1}{1+x^2}$.
+
+\begin{lstlisting}
+  class F : public Function{
+  public:
+      double operator () (const double &x) const{
+          return 1.0 / (1.0 + x * x);
+      }
+  } f;
+\end{lstlisting}
+
+After that, you should give your interpolating points with a \verb|std::vector<double>|. Here is an example where $x_k=-5+10\frac{k}{n}\;(k=0,1,...,n)$.
+
+\begin{lstlisting}
+  std::vector<double> x;
+  for(int i = 0; i <= n; i++)
+      x.push_back(-5.0 + 10.0 * i / n);
+\end{lstlisting}
+
+Finally, you can get the interpolation polynomial by:
+
+\begin{lstlisting}
+  NewtonInterpolation poly(f, x);
+\end{lstlisting}
+
+You can use the following code to get the value of $p_n(f;x)$ at point $x$.
+
+\begin{lstlisting}
+  double v = poly(x);
+\end{lstlisting}
+
+\subsection{Add an Interpolating Point}
+
+One of the advantage of Newton's interpolation is that it can add interpolating points conviniently. In this package, you can add one with the following code.
+
+\begin{lstlisting}
+  poly.addPoint(x_new);
+\end{lstlisting}
+
+It will increse the order of the polynomial \verb|poly| by one to make it coincides with $f$ at $x_{\text{new}}$ in an $O(n)$ time.
+
+\subsection{Output}
+
+This package supports three output modes: Normal, Latex and Tikz.
+
+The Normal mode is for human to read directly, as following
+
+\begin{lstlisting}
+  2+0.1*(x+5)-0.03*(x+5)*x
+\end{lstlisting}
+
+The Latex mode is for showing the result as a formula in a \LaTeX document, as following
+
+\begin{lstlisting}
+  2+0.1\pi_{0}(x)-0.03\pi_{1}(x)
+\end{lstlisting}
+
+The Tikz mode is for drawing the image of the result in the \textbf{Tikz} package, as following
+
+\begin{lstlisting}
+  2+0.1*(\x+5)-0.03*(\x+5)*\x
+\end{lstlisting}
+
+The default output mode is Normal. To change it, using one of the following codes.
+
+\begin{lstlisting}
+  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_NORMAL);
+  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_LATEX);
+  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_TIKZ);
+\end{lstlisting}
+
 \section{Results}
 
 \subsection{Assignment B}
@@ -48,9 +125,9 @@ The following figure shows the images of the interpolating polynomials and the o
   \begin{tikzpicture}[global scale = 0.8]
     \begin{axis}[
         axis lines=middle,
-        samples=50,
+        samples=51,
   %       grid,                
-        thick,
+  %      thick,
         domain=-5:5,
         legend pos=outer north east,
         smooth,
@@ -59,7 +136,7 @@ The following figure shows the images of the interpolating polynomials and the o
     \addplot+[color=red!60!black!40,no marks]{0.0384615+0.0397878*(\x+5)+0.061008*(\x+5)*(\x+2.5)-0.0265252*(\x+5)*(\x+2.5)*\x+0.00530504*(\x+5)*(\x+2.5)*\x*(\x-2.5)};
     \addplot+[color=red!40!black!60,no marks]{0.0384615+0.0264644*(\x+5)+0.0248454*(\x+5)*(\x+3.33333)+0.0149446*(\x+5)*(\x+3.33333)*(\x+1.66667)-0.0131699*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x+0.00420316*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x*(\x-1.66667)-0.000840633*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x*(\x-1.66667)*(\x-3.33333)};
     \addplot+[color=red!20!black!80,no marks]{0.0384615+0.0223428*(\x+5)+0.013956*(\x+5)*(\x+3.75)+0.0117043*(\x+5)*(\x+3.75)*(\x+2.5)+0.000674338*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)-0.00489646*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x+0.00243964*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)-0.000687223*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)*(\x-2.5)+0.000137445*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)*(\x-2.5)*(\x-3.75)};
-    \addplot+[color=black,thick,mark=*]{1/(1+\x*\x)};
+    \addplot+[color=black,thick,no marks]{1/(1+\x*\x)};
     \addlegendentry{$p_2(f;x)$}
     \addlegendentry{$p_4(f;x)$}
     \addlegendentry{$p_6(f;x)$}
@@ -70,5 +147,68 @@ The following figure shows the images of the interpolating polynomials and the o
 \end{center}
 
 This figure illustrates the Runge phenomenon significantly.
+
+\subsection{Assignment C}
+
+In this assignment, we choose the interpolating points to be the zeros of Chebyshev polynomials $T_n$, which are
+
+\begin{equation*}
+  x_k=\cos\left(\frac{2k-1}{2n}\pi\right),\qquad k=1,2,...,n
+\end{equation*}
+
+The interpolation results are too long to show. Please run the corresponding program directly to see the results. The following figure shows the images of the interpolating polynomials and the original function.
+
+\begin{center}
+  \begin{tikzpicture}[global scale = 0.8]
+    \begin{axis}[
+        axis lines=middle,
+        samples=51,
+  %       grid,                
+  %      thick,
+        domain=-1:1,
+        legend pos=outer north east,
+        smooth,
+    ]
+    \addplot+[color=red!80!black!20,no marks]{0.0423501-0.169057*(\x-0.951057)+1.42548*(\x-0.951057)*(\x-0.587785)+2.61208*(\x-0.951057)*(\x-0.587785)*(\x-6.12323e-17)+2.7465*(\x-0.951057)*(\x-0.587785)*(\x-6.12323e-17)*(\x+0.587785)};
+    \addplot+[color=red!60!black!40,no marks]{0.0393884-0.0887389*(\x-0.987688)+0.189679*(\x-0.987688)*(\x-0.891007)-0.534305*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)+2.11681*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)+8.28743*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)*(\x-0.156434)+11.9543*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)*(\x-0.156434)*(\x+0.156434)+10.3568*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)*(\x-0.156434)*(\x+0.156434)*(\x+0.45399)+5.51277*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)*(\x-0.156434)*(\x+0.156434)*(\x+0.45399)*(\x+0.707107)+8.9925e-16*(\x-0.987688)*(\x-0.891007)*(\x-0.707107)*(\x-0.45399)*(\x-0.156434)*(\x+0.156434)*(\x+0.45399)*(\x+0.707107)*(\x+0.891007)};
+    \addplot+[color=red!40!black!60,no marks]{0.0388699-0.0800675*(\x-0.994522)+0.134961*(\x-0.994522)*(\x-0.951057)-0.231498*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)+0.449158*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)-1.04753*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)+2.33944*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)+14.0283*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)+6.93539*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)-47.5358*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)-140.628*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)*(\x+0.406737)-235.756*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)*(\x+0.406737)*(\x+0.587785)-302.208*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)*(\x+0.406737)*(\x+0.587785)*(\x+0.743145)-331.791*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)*(\x+0.406737)*(\x+0.587785)*(\x+0.743145)*(\x+0.866025)-333.619*(\x-0.994522)*(\x-0.951057)*(\x-0.866025)*(\x-0.743145)*(\x-0.587785)*(\x-0.406737)*(\x-0.207912)*(\x-6.12323e-17)*(\x+0.207912)*(\x+0.406737)*(\x+0.587785)*(\x+0.743145)*(\x+0.866025)*(\x+0.951057)};
+    \addplot+[color=red!20!black!80,no marks]{0.0386906-0.0773136*(\x-0.996917)+0.120771*(\x-0.996917)*(\x-0.97237)-0.17893*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)+0.271509*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)-0.441458*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)+0.785471*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)-1.44565*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)+1.11365*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)+23.7955*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)-24.128*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)-331.452*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)-965.9*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)-1734.36*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)-2309.92*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)-2462.38*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)*(\x+0.649448)-2166.92*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)*(\x+0.649448)*(\x+0.760406)-1552.44*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)*(\x+0.649448)*(\x+0.760406)*(\x+0.85264)-788.326*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)*(\x+0.649448)*(\x+0.760406)*(\x+0.85264)*(\x+0.92388)+3.59221e-12*(\x-0.996917)*(\x-0.97237)*(\x-0.92388)*(\x-0.85264)*(\x-0.760406)*(\x-0.649448)*(\x-0.522499)*(\x-0.382683)*(\x-0.233445)*(\x-0.0784591)*(\x+0.0784591)*(\x+0.233445)*(\x+0.382683)*(\x+0.522499)*(\x+0.649448)*(\x+0.760406)*(\x+0.85264)*(\x+0.92388)*(\x+0.97237)};
+    \addplot+[color=black,thick,no marks]{1/(1+25*\x*\x)};
+    \addlegendentry{$p_5(f;x)$}
+    \addlegendentry{$p_{10}(f;x)$}
+    \addlegendentry{$p_{15}(f;x)$}
+    \addlegendentry{$p_{20}(f;x)$}
+    \addlegendentry{$f(x)$}
+    \end{axis}
+  \end{tikzpicture}
+\end{center}
+
+This figure illustrates that the Chebyshev interpolation is free of the wide oscillations in assignment B.
+
+\section{Assignment D}
+
+\begin{center}
+  \begin{tikzpicture}[global scale = 0.8]
+    \begin{axis}[
+        axis lines=middle,
+        samples=51,
+  %       grid,                
+  %      thick,
+        domain=0:13,
+        legend pos=outer north east,
+        smooth,
+    ]
+    \addplot+[color=black,thick,no marks]{0-164.234*\x-14555.6*\x*\x+17225.8*\x*\x*\x-8261.93*\x*\x*\x*\x+2098.17*\x*\x*\x*\x*\x-305.573*\x*\x*\x*\x*\x*\x+25.5735*\x*\x*\x*\x*\x*\x*\x-1.14094*\x*\x*\x*\x*\x*\x*\x*\x+0.0209814*\x*\x*\x*\x*\x*\x*\x*\x*\x};
+    \end{axis}
+  \end{tikzpicture}
+\end{center}
+
+\section{Summary}
+
+The figures in this report are drawn with \textbf{Tikz}.
+
+This template is designed by Elegant\LaTeX{} Program.
+
+Many appreciations for your carefully reading. If you found any mistakes, please contact me directly. Have fun with your loving one (boyfriend, girlfriend or coding)!
 
 \end{document}

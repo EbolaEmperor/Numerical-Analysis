@@ -2,22 +2,24 @@
 #include <cmath>
 #include "interpolation.h"
 
+const double pi = acos(-1);
+
 class Func{
 public:
     double operator () (const double &x) const{
-        return 1.0 / (1.0 + x * x);
+        return 1.0 / (1.0 + 25.0 * x * x);
     }
 } func;
 
 int main(){
     std::vector<NewtonInterpolation> poly;
 
-    for(int n = 2; n <= 8; n += 2){
+    for(int n = 5; n <= 20; n += 5){
         std::vector<double> x;
         std::vector<double> f;
-        for(int i = 0; i <= n; i++){
-            x.push_back(-5.0 + 10.0 * i / n);
-            f.push_back(func(x[i]));
+        for(int i = 1; i <= n; i++){
+            x.push_back( cos((2.0 * i - 1.0) / (2.0 * n) * pi) );
+            f.push_back(func(x[i-1]));
         }
         poly.push_back(NewtonInterpolation(x, f));
     }
