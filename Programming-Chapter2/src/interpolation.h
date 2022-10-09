@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <string>
+#include <sstream>
 
 const double _epsL = 10 * std::numeric_limits<double>::epsilon();
 
@@ -37,7 +39,7 @@ public:
         coef.push_back(newv);
     }
 
-    NewtonInterpolation(NewtonInterpolation & p):
+    NewtonInterpolation(const NewtonInterpolation & p):
         f(p.f), x(p.x), diffTable(p.diffTable), coef(p.coef), n(p.n) {}
     NewtonInterpolation(Function & f, std::vector<double> & x): f(f) { 
         n = -1;
@@ -57,6 +59,60 @@ public:
         }
         return ans;
     }
+
+    static const int OUTPUT_NORMAL = 0;
+    static const int OUTPUT_LATEX = 1;
+    static const int OUTPUT_TIKZ = 2;
+    static int outputMode;
+
+    static void setOutput(const int & style){
+        if(style == OUTPUT_NORMAL){
+            outputMode = OUTPUT_NORMAL;
+            std::cerr << "[Interpolation output mode : Normal]" << std::endl;
+        }
+        else if(style == OUTPUT_LATEX){
+            outputMode = OUTPUT_LATEX;
+            std::cerr << "[Interpolation output mode : Latex]" << std::endl;
+        }
+        else if(style == OUTPUT_TIKZ){
+            outputMode = OUTPUT_TIKZ;
+            std::cerr << "[Interpolation output mode : Tikz]" << std::endl;
+        }
+        else
+            std::cerr << "[Error] Incorrect interpolation output mode setting !!!" << std::endl;
+    }
+
+    friend std::ostream & operator << (std::ostream & out, NewtonInterpolation & ni){
+        std::stringstream curs;
+        for(int i = 0; i <= ni.n; i++){
+            out << ni.coef[i] << curs.str();
+            if(i < ni.n && ni.coef[i+1] >= 0) out << "+";
+            if(outputMode == OUTPUT_TIKZ){
+                if(ni.x[i] == 0)
+                    curs << "*\\x";
+                else if(ni.x[i] > 0)
+                    curs << "*(\\x-" << ni.x[i] << ")";
+                else
+                    curs << "*(\\x+" << -ni.x[i] << ")";
+            }
+            else if(outputMode == OUTPUT_NORMAL){
+                if(ni.x[i] == 0)
+                    curs << "*x";
+                else if(ni.x[i] > 0)
+                    curs << "*(x-" << ni.x[i] << ")";
+                else
+                    curs << "*(x+" << -ni.x[i] << ")";
+            }
+            else if(outputMode == OUTPUT_LATEX){
+                curs.str("");
+                curs.clear();
+                curs << "\\pi_{" << i << "}(x)";
+            }
+        }
+        return out;
+    }
 };
+
+int NewtonInterpolation::outputMode = 0;
 
 #endif

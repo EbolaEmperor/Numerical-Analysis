@@ -1,0 +1,74 @@
+%!TEX program = pdflatex
+\documentclass[11pt,en]{elegantpaper}
+
+\title{The Report for Programming Assignments in Chapter Two}
+\author{Wenchong Huang}
+
+\date{\today}
+
+% cmd for this doc
+\usepackage{array}
+\usepackage{float}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
+
+\begin{document}
+
+\maketitle
+
+
+\section{How to Test}
+
+Enter the folder \verb|Programming-Chapter2/src| with terminal, \verb |make| here, you will see some executable files whose names are corresponding assignments. Run them directly and you will see the results.
+
+\section{Results}
+
+\subsection{Assignment B}
+
+Here are the Newton's interpolation results.
+\begin{align*}
+  p_2(f;x) &= 0.0384615+0.192308\pi_{0}(x)-0.0384615\pi_{1}(x)\\
+  p_4(f;x) &= 0.0384615+0.0397878\pi_{0}(x)+0.061008\pi_{1}(x)-0.0265252\pi_{2}(x)+0.00530504\pi_{3}(x)\\
+  p_6(f;x) &= 0.0384615+0.0264644\pi_{0}(x)+0.0248454\pi_{1}(x)+0.0149446\pi_{2}(x)-0.0131699\pi_{3}(x)\\
+           &  +0.00420316\pi_{4}(x)-0.000840633\pi_{5}(x)\\
+  p_8(f;x) &= 0.0384615+0.0223428\pi_{0}(x)+0.013956\pi_{1}(x)+0.0117043\pi_{2}(x)+0.000674338\pi_{3}(x)\\
+           &  -0.00489646\pi_{4}(x)+0.00243964\pi_{5}(x)-0.000687223\pi_{6}(x)+0.000137445\pi_{7}(x)
+\end{align*}
+
+The following figure shows the images of the interpolating polynomials and the original function.
+
+\tikzset{global scale/.style={
+    scale=#1,
+    every node/.append style={scale=#1}
+  }
+}
+
+\begin{center}
+  \begin{tikzpicture}[global scale = 0.8]
+    \begin{axis}[
+        axis lines=middle,
+        samples=50,
+  %       grid,                
+        thick,
+        domain=-5:5,
+        legend pos=outer north east,
+        smooth,
+    ]
+    \addplot+[color=red!80!black!20,no marks]{0.0384615+0.192308*(\x+5)-0.0384615*(\x+5)*\x};
+    \addplot+[color=red!60!black!40,no marks]{0.0384615+0.0397878*(\x+5)+0.061008*(\x+5)*(\x+2.5)-0.0265252*(\x+5)*(\x+2.5)*\x+0.00530504*(\x+5)*(\x+2.5)*\x*(\x-2.5)};
+    \addplot+[color=red!40!black!60,no marks]{0.0384615+0.0264644*(\x+5)+0.0248454*(\x+5)*(\x+3.33333)+0.0149446*(\x+5)*(\x+3.33333)*(\x+1.66667)-0.0131699*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x+0.00420316*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x*(\x-1.66667)-0.000840633*(\x+5)*(\x+3.33333)*(\x+1.66667)*\x*(\x-1.66667)*(\x-3.33333)};
+    \addplot+[color=red!20!black!80,no marks]{0.0384615+0.0223428*(\x+5)+0.013956*(\x+5)*(\x+3.75)+0.0117043*(\x+5)*(\x+3.75)*(\x+2.5)+0.000674338*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)-0.00489646*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x+0.00243964*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)-0.000687223*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)*(\x-2.5)+0.000137445*(\x+5)*(\x+3.75)*(\x+2.5)*(\x+1.25)*\x*(\x-1.25)*(\x-2.5)*(\x-3.75)};
+    \addplot+[color=black,thick,mark=*]{1/(1+\x*\x)};
+    \addlegendentry{$p_2(f;x)$}
+    \addlegendentry{$p_4(f;x)$}
+    \addlegendentry{$p_6(f;x)$}
+    \addlegendentry{$p_8(f;x)$}
+    \addlegendentry{$f(x)$}
+    \end{axis}
+  \end{tikzpicture}
+\end{center}
+
+This figure illustrates the Runge phenomenon significantly.
+
+\end{document}
