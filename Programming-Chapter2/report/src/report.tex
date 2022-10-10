@@ -11,6 +11,8 @@
 \usepackage{float}
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{subfigure}
 \newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
 
 \begin{document}
@@ -26,31 +28,30 @@ Enter the folder \verb|Programming-Chapter2/src| with terminal, \verb |make| her
 
 This package is for Newton's polynomial interpolation.
 
-\subsection{Initializing}
+\subsection{Newton's Interpolation}
 
-You should include the header \verb|interpolation.h|, then define your function object as a derived class of \verb|Function|. Here is an example where $f(x)=\frac{1}{1+x^2}$.
+\subsubsection{Initializing}
+
+You should include the header \verb|interpolation.h|. Then you should give your interpolating points and interpolating values with two \verb|std::vector<double>|. Here is an example where $x_k=-5+10\frac{k}{n}\;(k=0,1,...,n)$ and $f(x)=\frac{1}{1+x^2}$.
 
 \begin{lstlisting}
-  class F : public Function{
+  class F{
   public:
       double operator () (const double &x) const{
           return 1.0 / (1.0 + x * x);
       }
-  } f;
-\end{lstlisting}
-
-After that, you should give your interpolating points with a \verb|std::vector<double>|. Here is an example where $x_k=-5+10\frac{k}{n}\;(k=0,1,...,n)$.
-
-\begin{lstlisting}
-  std::vector<double> x;
-  for(int i = 0; i <= n; i++)
+  } func;
+  std::vector<double> x, f;
+  for(int i = 0; i <= n; i++){
       x.push_back(-5.0 + 10.0 * i / n);
+      f.push_back(func(x[i]));
+  }
 \end{lstlisting}
 
-Finally, you can get the interpolation polynomial by:
+After that, you can get the interpolation polynomial by:
 
 \begin{lstlisting}
-  NewtonInterpolation poly(f, x);
+  NewtonInterpolation poly(x, f);
 \end{lstlisting}
 
 You can use the following code to get the value of $p_n(f;x)$ at point $x$.
@@ -59,7 +60,7 @@ You can use the following code to get the value of $p_n(f;x)$ at point $x$.
   double v = poly(x);
 \end{lstlisting}
 
-\subsection{Add an Interpolating Point}
+\subsubsection{Add an Interpolating Point}
 
 One of the advantage of Newton's interpolation is that it can add interpolating points conviniently. In this package, you can add one with the following code.
 
@@ -69,7 +70,7 @@ One of the advantage of Newton's interpolation is that it can add interpolating 
 
 It will increse the order of the polynomial \verb|poly| by one to make it coincides with $f$ at $x_{\text{new}}$ in an $O(n)$ time.
 
-\subsection{Output}
+\subsubsection{Output}
 
 This package supports three output modes: Normal, Latex and Tikz.
 
@@ -97,6 +98,59 @@ The default output mode is Normal. To change it, using one of the following code
   NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_NORMAL);
   NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_LATEX);
   NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_TIKZ);
+\end{lstlisting}
+
+\subsection{Hermite's Interpolation}
+
+Hermite's Interpolation depends not only on function values, but also deriviate values, even high order deriviate values.
+
+\subsubsection{Initializing}
+
+You should include the header \verb|interpolation.h|. Then define an Hermite interpolation polynomial.
+
+\begin{lstlisting}
+  HermiteInterpolation poly;
+\end{lstlisting}
+
+You should give your interpolating conditions like $f^{(k)}(x)=y$ with the following code.
+
+\begin{lstlisting}
+  poly.addCondition(x, k, y);
+\end{lstlisting}
+
+You can get the value of the interpolation polynomial at point $x$ with the following code.
+
+\begin{lstlisting}
+  double v = poly(x);
+\end{lstlisting}
+
+You can get the deriviate function of $k$th order with the following code.
+
+\begin{lstlisting}
+  HermiteInterpolation dpoly = poly.diff(k);
+\end{lstlisting}
+
+\subsubsection{Output}
+
+This package supports two output modes: Latex and Tikz.
+
+The Latex mode is for showing the result as a formula in a \LaTeX document, as following
+
+\begin{lstlisting}
+  3+75x^{1}+7.16191x^{2}
+\end{lstlisting}
+
+The Tikz mode is for drawing the image of the result in the \textbf{Tikz} package, as following
+
+\begin{lstlisting}
+  3+75*\x+7.16191*\x*\x
+\end{lstlisting}
+
+The default output mode is Latex. To change it, using one of the following codes.
+
+\begin{lstlisting}
+  HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_LATEX);
+  HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_TIKZ);
 \end{lstlisting}
 
 \section{Results}
@@ -187,6 +241,16 @@ This figure illustrates that the Chebyshev interpolation is free of the wide osc
 
 \section{Assignment D}
 
+Let $f(x)$ be the position at time $x$, then the vilocity at time $x$ is $f'(x)$.
+
+Interpolating with the function values and deriviate values at $0,3,5,8,13$, we can get an polynomial of order $9$, as following.
+\begin{align*}
+  f(x)=&75x^{1}+7.16191x^{2}-10.0953x^{3}+5.50812x^{4}-1.5383x^{5}+0.243041x^{6}\\
+  &-0.0218757x^{7}+0.00104059x^{8}-2.02236\times 10^{-5}x^{9}
+\end{align*}
+
+The image of the function sees the following figure.
+
 \begin{center}
   \begin{tikzpicture}[global scale = 0.8]
     \begin{axis}[
@@ -198,7 +262,65 @@ This figure illustrates that the Chebyshev interpolation is free of the wide osc
         legend pos=outer north east,
         smooth,
     ]
-    \addplot+[color=black,thick,no marks]{0-164.234*\x-14555.6*\x*\x+17225.8*\x*\x*\x-8261.93*\x*\x*\x*\x+2098.17*\x*\x*\x*\x*\x-305.573*\x*\x*\x*\x*\x*\x+25.5735*\x*\x*\x*\x*\x*\x*\x-1.14094*\x*\x*\x*\x*\x*\x*\x*\x+0.0209814*\x*\x*\x*\x*\x*\x*\x*\x*\x};
+    \addplot+[color=black,thick,no marks]{0+75*\x+7.16191*\x*\x-10.0953*\x*\x*\x+5.50812*\x*\x*\x*\x-1.5383*\x*\x*\x*\x*\x+0.243041*\x*\x*\x*\x*\x*\x-0.0218757*\x*\x*\x*\x*\x*\x*\x+0.00104059*\x*\x*\x*\x*\x*\x*\x*\x-2.02236e-05*\x*\x*\x*\x*\x*\x*\x*\x*\x};
+    \end{axis}
+  \end{tikzpicture}
+\end{center}
+
+To get the vilocity image, we can calculate the deriviate of $f$, as following.
+\begin{align*}
+  f'(x)=&75+14.3238x^{1}-30.2859x^{2}+22.0325x^{3}-7.69148x^{4}+1.45825x^{5}\\
+  &-0.15313x^{6}+0.00832472x^{7}-0.000182013x^{8}
+\end{align*}
+
+The image of vilocity function sees the following figure.
+
+\begin{center}
+  \begin{tikzpicture}[global scale = 0.8]
+    \begin{axis}[
+      axis lines=middle,
+      samples=51,
+    %       grid,                
+    %      thick,
+      domain=0:13,
+      ymin=45,
+      ymax=130,
+      legend pos=outer north east,
+      smooth,
+    ]
+    \addplot+[color=black,thick,no marks]{75+14.3238*\x-30.2859*\x*\x+22.0325*\x*\x*\x-7.69148*\x*\x*\x*\x+1.45825*\x*\x*\x*\x*\x-0.15313*\x*\x*\x*\x*\x*\x+0.00832472*\x*\x*\x*\x*\x*\x*\x-0.000182013*\x*\x*\x*\x*\x*\x*\x*\x};
+    \end{axis}
+  \end{tikzpicture}
+\end{center}
+
+Now we can answer the problems:
+
+\begin{enumerate}[(a)]
+  \item The position of time $t=10s$ is $f(10)=742.503\;(\text{feet})$.
+  \item As the vilocity image shows, it could be easily observed that the vilocity around time $t=12s$ reaches about $120$ feet per second. That's an excessive speeding.
+\end{enumerate}
+
+\subsection{Assignment E}
+
+Here are the interpolating results.
+
+The images see the following figure.
+
+\begin{center}
+  \begin{tikzpicture}[global scale = 0.8]
+    \begin{axis}[
+      axis lines=middle,
+      samples=51,
+    %       grid,                
+    %      thick,
+      domain=0:1,
+      legend pos=outer north east,
+      smooth,
+    ]
+    \addplot+[thick,no marks]{0.1334+1.063*\x+8.241*\x*(\x-0.2)-67.3803*\x*(\x-0.2)*(\x-0.333333)+219.77*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)-475.349*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)*(\x-0.566667)+604.735*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)*(\x-0.566667)*(\x-0.666667)};
+    %\addplot+[thick,no marks]{6.67+1.57167*\x-0.0871667*\x*(\x-6)-0.0152729*\x*(\x-6)*(\x-10)+0.00257908*\x*(\x-6)*(\x-10)*(\x-13)-0.000204804*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)+8.6768e-06*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)*(\x-20)};
+    \addlegendentry{sp1}
+    %\addlegendentry{sp2}
     \end{axis}
   \end{tikzpicture}
 \end{center}

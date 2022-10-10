@@ -3,24 +3,29 @@
 #include "interpolation.h"
 
 int main(){
-    HermiteInterpolation poly;
-    poly.addCondition(0, 0, 0);
-    poly.addCondition(0, 1, 75);
-    poly.addCondition(3, 0, 225);
-    poly.addCondition(3, 1, 77);
-    poly.addCondition(5, 0, 383);
-    poly.addCondition(5, 1, 80);
-    poly.addCondition(8, 0, 623);
-    poly.addCondition(8, 1, 74);
-    poly.addCondition(13, 0, 993);
-    poly.addCondition(13, 1, 72);
+    const int n = 5;
+    const double xvalues[] = {0, 3, 5, 8, 13};
+    const double fvalues[] = {0, 225, 383, 623, 993};
+    const double dfvalues[] = {75, 77, 80, 74, 72};
 
-    HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_LATEX);
-    std::cout << poly << std::endl;
+    std::vector<double> x(xvalues, xvalues + n);
+    std::vector<double> f(fvalues, fvalues + n);
+    std::vector<double> df(dfvalues, dfvalues + n);
+
+    HermiteInterpolation hpoly(x, f, df);
+    Polynomial poly = hpoly.standardize();
+    Polynomial dpoly = poly.diff();
+
+    Polynomial::setOutput(Polynomial::OUTPUT_LATEX);
+    std::cout << poly << std::endl << std::endl;
+    std::cout << poly(10) << std::endl << std::endl;
+    std::cout << dpoly << std::endl << std::endl;
 
     // 若需要输出 Tikz可识别 的格式， 请将下面的注释取消
-    HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_TIKZ);
-    std::cout << poly << std::endl;
+    // Polynomial::setOutput(Polynomial::OUTPUT_TIKZ);
+    // std::cout << poly << std::endl << std::endl;
+    // std::cout << poly(10) << std::endl << std::endl;
+    // std::cout << dpoly << std::endl << std::endl;
 
     return 0;
 }

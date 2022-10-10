@@ -5,82 +5,157 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "matrix.h"
 
-class NewtonInterpolation{
+class Polynomial{
 private:
-    std::vector<double> x;
-    std::vector<double> diffTable;
+    static int outputMode;
+
+protected:
     std::vector<double> coef;
     int n;
 
 public:
-    // 添加一个插值点，复杂度为O(n)，允许在构造函数外调用
-    void addPoint(const double &newx, const double &newf){
-        n++;
-        x.push_back(newx);
-        double newv = newf;
-        for(int j = 1; j <= n; j++){
-            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
-            diffTable[j-1] = newv;
-            newv = tmp;
-        }
-        diffTable.push_back(newv);
-        coef.push_back(newv);
+    Polynomial(){n = 0;}
+    Polynomial(const double &x){
+        n = 0;
+        coef.push_back(x);
     }
+    Polynomial(const double &x0, const double &x1){
+        n = 1;
+        coef.push_back(x0);
+        coef.push_back(x1);
+    }
+    Polynomial(const Polynomial & p):
+        coef(p.coef), n(p.n) {}
 
-    NewtonInterpolation(const NewtonInterpolation & p):
-        x(p.x), diffTable(p.diffTable), coef(p.coef), n(p.n) {}
-    NewtonInterpolation(std::vector<double> & _x, std::vector<double> & _f){ 
-        n = -1;
-        if(_x.size() != _f.size()){
-            std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
+    // 设置了一些输出格式，默认为适合Latex公式显示的格式，也支持Tikz可识别的格式
+    static const int OUTPUT_LATEX = 0;
+    static const int OUTPUT_TIKZ = 1;
+
+    static void setOutput(const int & style){
+        if(style == OUTPUT_LATEX){
+            outputMode = OUTPUT_LATEX;
+            std::cerr << "[Polynomial output mode : Latex]" << std::endl;
+        }
+        else if(style == OUTPUT_TIKZ){
+            outputMode = OUTPUT_TIKZ;
+            std::cerr << "[Polynomial output mode : Tikz]" << std::endl;
+        }
+        else{
+            std::cerr << "[Error] Incorrect Polynomial output mode setting !!!" << std::endl;
             exit(-1);
         }
-        for(int i = 0; i < _x.size(); i++)
-            addPoint(_x[i], _f[i]);
     }
-    ~NewtonInterpolation(){
-        x.clear();
-        diffTable.clear();
-        coef.clear();
+
+    friend std::ostream & operator << (std::ostream & out, Polynomial & ni){
+        std::stringstream curs;
+        for(int i = 0; i <= ni.n; i++){
+            out << ni.coef[i] << curs.str();
+            if(i < ni.n && ni.coef[i+1] >= 0) out << "+";
+            if(outputMode == OUTPUT_TIKZ)
+                curs << "*\\x";
+            else if(outputMode == OUTPUT_LATEX){
+                curs.str("");
+                curs.clear();
+                curs << "*x^{" << i + 1 << "}";
+            }
+        }
+        return out;
     }
 
     double operator () (const double &vx) const{
         double prod = 1, ans = 0;
         for(int i = 0; i <= n; i++){
             ans += coef[i] * prod;
-            prod *= vx - x[i];
+            prod *= vx;
         }
         return ans;
+    }
+
+    Polynomial operator + (const Polynomial &rhs){
+        Polynomial res(*this);
+        res.n = std::max(res.n, rhs.n);
+        res.coef.resize(res.n + 1);
+        for(int i = 0; i <= rhs.n; i++)
+            res.coef[i] += rhs.coef[i];
+        return res;
+    }
+
+    Polynomial operator * (const double &rhs){
+        Polynomial res;
+        res.n = n;
+        res.coef.resize(res.n + 1);
+        for(int i = 0; i <= n; i++)
+            res.coef[i] = coef[i] * rhs;
+        return res;
+    }
+
+    Polynomial operator * (const Polynomial &rhs){
+        Polynomial res;
+        res.n = n + rhs.n;
+        res.coef.resize(res.n + 1);
+        for(int i = 0; i <= n; i++)
+            for(int j = 0; j <= rhs.n; j++)
+                res.coef[i+j] += coef[i] * rhs.coef[j];
+        return res;
+    }
+
+    Polynomial diff(){
+        Polynomial res;
+        res.n = n ? n - 1 : 0;
+        for(int i = 1; i <= n; i++)
+            res.coef.push_back(coef[i] * i);
+        return res;
+    }
+};
+
+int Polynomial::outputMode = 0;
+
+class NewtonPolynomial{
+private:
+    static int outputMode;
+
+protected:
+    std::vector<double> x;
+    std::vector<double> diffTable;
+    std::vector<double> coef;
+    int n;
+
+public:
+    NewtonPolynomial(){n = 0;}
+    NewtonPolynomial(const NewtonPolynomial & p):
+        x(p.x), diffTable(p.diffTable), coef(p.coef), n(p.n) {}
+    ~NewtonPolynomial(){
+        x.clear();
+        diffTable.clear();
+        coef.clear();
     }
 
     // 设置了一些输出格式，默认为直接阅读的格式Normal，也支持适合Latex公式显示的格式，以及Tikz可识别的格式
     static const int OUTPUT_NORMAL = 0;
     static const int OUTPUT_LATEX = 1;
     static const int OUTPUT_TIKZ = 2;
-    static int outputMode;
 
     static void setOutput(const int & style){
         if(style == OUTPUT_NORMAL){
             outputMode = OUTPUT_NORMAL;
-            std::cerr << "[Newton interpolation output mode : Normal]" << std::endl;
+            std::cerr << "[Newton polynomial output mode : Normal]" << std::endl;
         }
         else if(style == OUTPUT_LATEX){
             outputMode = OUTPUT_LATEX;
-            std::cerr << "[Newton interpolation output mode : Latex]" << std::endl;
+            std::cerr << "[Newton polynomial output mode : Latex]" << std::endl;
         }
         else if(style == OUTPUT_TIKZ){
             outputMode = OUTPUT_TIKZ;
-            std::cerr << "[Newton Interpolation output mode : Tikz]" << std::endl;
+            std::cerr << "[Newton polynomial output mode : Tikz]" << std::endl;
         }
         else{
-            std::cerr << "[Error] Incorrect Newton interpolation output mode setting !!!" << std::endl;
+            std::cerr << "[Error] Incorrect Newton polynomial output mode setting !!!" << std::endl;
             exit(-1);
         }
     }
 
-    friend std::ostream & operator << (std::ostream & out, NewtonInterpolation & ni){
+    friend std::ostream & operator << (std::ostream & out, NewtonPolynomial & ni){
         std::stringstream curs;
         for(int i = 0; i <= ni.n; i++){
             out << ni.coef[i] << curs.str();
@@ -109,106 +184,91 @@ public:
         }
         return out;
     }
-};
 
-int NewtonInterpolation::outputMode = 0;
-
-class HermiteInterpolation{
-private:
-    std::vector<double> coef;
-    int n;
-    
-    struct Condition{
-        double x;
-        int order;
-        double value;
-    };
-    std::vector<Condition> cond;
-
-    void solve(){
-        if(!coef.empty()) coef.clear();
-        n = cond.size() - 1;
-        Matrix A(n+1, n+1);
-        ColVector b(n+1);
-        for(int i = 0; i <= n; i++){
-            double x = cond[i].x, prod = 1.0;
-            int k = cond[i].order;
-            b[i] = cond[i].value;
-            for(int j = k; j <= n; j++){
-                double fac = 1.0;
-                for(int p = 0; p < k; p++)
-                    fac *= j - p;
-                A[i][j] = prod * fac;
-                prod *= x;
-            }
-        }
-        ColVector res = ::solve(A, b);
-        if(res.empty()){
-            std::cerr << "[Error] Cannot solve Hermite interpolation, check your condition!" << std::endl;
-            exit(-1);
-        }
-        for(int i = 0; i <= n; i++)
-            coef.push_back(res[i]);
-    }
-
-public:
-    HermiteInterpolation(): n(0) {}
-    HermiteInterpolation(const HermiteInterpolation & rhs):
-        cond(rhs.cond), coef(rhs.coef), n(rhs.n) {}
-    
-    void addCondition(const double &x, const int &order, const double &value){
-        cond.push_back((Condition){x,order,value});
-        if(!coef.empty()) coef.clear();
-    }
-    
-    double operator () (const double &x) {
-        if(coef.empty()) solve();
+    double operator () (const double &vx) const{
         double prod = 1, ans = 0;
         for(int i = 0; i <= n; i++){
             ans += coef[i] * prod;
-            prod *= x;
+            prod *= vx - x[i];
         }
         return ans;
     }
 
-    // 设置了一些输出格式，支持适合Latex公式显示的格式，以及Tikz可识别的格式
-    static const int OUTPUT_LATEX = 0;
-    static const int OUTPUT_TIKZ = 1;
-    static int outputMode;
-
-    static void setOutput(const int & style){
-        if(style == OUTPUT_LATEX){
-            outputMode = OUTPUT_LATEX;
-            std::cerr << "[Hermite interpolation output mode : Latex]" << std::endl;
+    Polynomial standardize(){
+        Polynomial res(coef[0]), prod(1.0);
+        for(int i = 1; i <= n; i++){
+            Polynomial tmp(-x[i-1], 1.0);
+            prod = prod * tmp;
+            res = res + prod * coef[i];
         }
-        else if(style == OUTPUT_TIKZ){
-            outputMode = OUTPUT_TIKZ;
-            std::cerr << "[Hermite interpolation output mode : Tikz]" << std::endl;
-        }
-        else{
-            std::cerr << "[Error] Incorrect Hermite interpolation output mode setting !!!" << std::endl;
-            exit(-1);
-        }
-    }
-
-    friend std::ostream & operator << (std::ostream & out, HermiteInterpolation & ni){
-        if(ni.coef.empty()) ni.solve();
-        std::stringstream curs;
-        for(int i = 0; i <= ni.n; i++){
-            out << ni.coef[i] << curs.str();
-            if(i < ni.n && ni.coef[i+1] >= 0) out << "+";
-            if(outputMode == OUTPUT_TIKZ)
-                curs << "*\\x";
-            else if(outputMode == OUTPUT_LATEX){
-                curs.str("");
-                curs.clear();
-                curs << "x^{" << i + 1 << "}";
-            }
-        }
-        return out;
+        return res;
     }
 };
 
-int HermiteInterpolation::outputMode = 0;
+int NewtonPolynomial::outputMode = 0;
+
+class NewtonInterpolation : public NewtonPolynomial{
+public:
+    // 添加一个插值点，复杂度为O(n)，允许在构造函数外调用
+    void addPoint(const double &newx, const double &newf){
+        n++;
+        x.push_back(newx);
+        double newv = newf;
+        for(int j = 1; j <= n; j++){
+            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
+            diffTable[j-1] = newv;
+            newv = tmp;
+        }
+        diffTable.push_back(newv);
+        coef.push_back(newv);
+    }
+
+    NewtonInterpolation(std::vector<double> & _x, std::vector<double> & _f){ 
+        n = -1;
+        if(_x.size() != _f.size()){
+            std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
+            exit(-1);
+        }
+        for(int i = 0; i < _x.size(); i++)
+            addPoint(_x[i], _f[i]);
+    }
+};
+
+class HermiteInterpolation : public NewtonPolynomial{
+public:
+    // 添加一个插值点，复杂度为O(n)，允许在构造函数外调用
+    void addPoint(const double &newx, const double &newf, const double &newdf){
+        n++;
+        x.push_back(newx);
+        double newv = newf;
+        for(int j = 1; j <= n; j++){
+            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
+            diffTable[j-1] = newv;
+            newv = tmp;
+        }
+        diffTable.push_back(newv);
+        coef.push_back(newv);
+        n++;
+        x.push_back(newx);
+        newv = newdf;
+        for(int j = 2; j <= n; j++){
+            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
+            diffTable[j-1] = newv;
+            newv = tmp;
+        }
+        diffTable.push_back(newv);
+        coef.push_back(newv);
+    }
+
+    HermiteInterpolation(std::vector<double> & _x, std::vector<double> & _f, std::vector<double> & _df){ 
+        n = -1;
+        if(_x.size() != _f.size() || _x.size() != _df.size()){
+            std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
+            exit(-1);
+        }
+        for(int i = 0; i < _x.size(); i++)
+            addPoint(_x[i], _f[i], _df[i]);
+    }
+};
 
 #endif

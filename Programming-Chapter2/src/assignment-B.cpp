@@ -22,14 +22,14 @@ int main(){
         poly.push_back(NewtonInterpolation(x, f));
     }
 
-    NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_NORMAL);
+    NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_NORMAL);
     for(auto p : poly) std::cout << p << std::endl << std::endl;
 
     // 若需要输出 Latex公式 或 Tikz可识别 的格式， 请将下面的注释取消
 
-    // NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_LATEX);
+    // NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_LATEX);
     // for(auto p : poly) std::cout << p << std::endl << std::endl;
-    // NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_TIKZ);
+    // NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_TIKZ);
     // for(auto p : poly) std::cout << p << std::endl << std::endl;
 
     return 0;
