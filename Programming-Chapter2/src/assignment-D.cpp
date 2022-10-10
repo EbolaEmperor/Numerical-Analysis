@@ -3,16 +3,14 @@
 #include "interpolation.h"
 
 int main(){
-    const int n = 5;
-    const double xvalues[] = {0, 3, 5, 8, 13};
-    const double fvalues[] = {0, 225, 383, 623, 993};
-    const double dfvalues[] = {75, 77, 80, 74, 72};
+    const int n = 10;
+    const double xvalues[] = {0, 0, 3, 3, 5, 5, 8, 8, 13, 13};
+    const double fvalues[] = {0, 75, 225, 77, 383, 80, 623, 74, 993, 72};
 
     std::vector<double> x(xvalues, xvalues + n);
     std::vector<double> f(fvalues, fvalues + n);
-    std::vector<double> df(dfvalues, dfvalues + n);
 
-    HermiteInterpolation hpoly(x, f, df);
+    HermiteInterpolation hpoly(x, f);
     Polynomial poly = hpoly.standardize();
     Polynomial dpoly = poly.diff();
 

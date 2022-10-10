@@ -68,20 +68,23 @@ It will increse the order of the polynomial \verb|poly| by one to make it coinci
 
 \subsection{Hermite's Interpolation}
 
-Hermite's Interpolation depends not only on function values, but also deriviate values. In this package, we only support the first order deriviate.
+Hermite's Interpolation depends not only on function values, but also deriviate values, even high-order deriviate values.
 
-You should include the header \verb|interpolation.h|. Give your interpolating points and corresponding function values and deriviate values with three \verb|std::vector<double>|. Here is an example.
+You should include the header \verb|interpolation.h|. Give your interpolating points and corresponding function values and deriviate values with two \verb|std::vector<double>|. Here is an example.
 
 \begin{lstlisting}
-  const int n = 5;
-  const double xvalues[] = {0, 3, 5, 8, 13};
-  const double fvalues[] = {0, 225, 383, 623, 993};
-  const double dfvalues[] = {75, 77, 80, 74, 72};
+  const int n = 6;
+  const double xvalues[] = {0, 3, 3, 3, 5, 5};
+  const double fvalues[] = {0, 225, 77, 3, 383, 80};
   std::vector<double> x(xvalues, xvalues + n);
   std::vector<double> f(fvalues, fvalues + n);
-  std::vector<double> df(dfvalues, dfvalues + n);
-  HermiteInterpolation hpoly(x, f, df);
+  HermiteInterpolation hpoly(x, f);
 \end{lstlisting}
+
+The code below solves the interpolation which satisfies:
+\begin{equation*}
+  f(0)=0,\quad f(3)=225,\quad f'(3)=77,\quad f''(3)=3,\quad f(5)=383, \quad f'(5)=80
+\end{equation*}
 
 You can get the value of the interpolation polynomial at point $x$ with the following code.
 
