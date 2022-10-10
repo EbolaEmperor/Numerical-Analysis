@@ -15,20 +15,18 @@ int main(){
     NewtonInterpolation poly1(x, sp1);
     NewtonInterpolation poly2(x, sp2);
 
-    for(int i = 0; i < n; i++)
-        std::cerr << poly1(x[i]) << " ";
-    std::cerr << std::endl;
 
-    NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_NORMAL);
+    NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_NORMAL);
     std::cerr << poly1 << std::endl << std::endl;
     std::cerr << poly2 << std::endl << std::endl;
+    std::cerr << poly1(43) << " " << poly2(43) << std::endl; 
 
-    NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_LATEX);
-    std::cerr << poly1 << std::endl << std::endl;
-    std::cerr << poly2 << std::endl << std::endl;
-    NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_TIKZ);
-    std::cerr << poly1 << std::endl << std::endl;
-    std::cerr << poly2 << std::endl << std::endl;
+    // NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_LATEX);
+    // std::cerr << poly1 << std::endl << std::endl;
+    // std::cerr << poly2 << std::endl << std::endl;
+    // NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_TIKZ);
+    // std::cerr << poly1 << std::endl << std::endl;
+    // std::cerr << poly2 << std::endl << std::endl;
 
     return 0;
 }

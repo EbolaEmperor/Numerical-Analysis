@@ -30,8 +30,6 @@ This package is for Newton's polynomial interpolation.
 
 \subsection{Newton's Interpolation}
 
-\subsubsection{Initializing}
-
 You should include the header \verb|interpolation.h|. Then you should give your interpolating points and interpolating values with two \verb|std::vector<double>|. Here is an example where $x_k=-5+10\frac{k}{n}\;(k=0,1,...,n)$ and $f(x)=\frac{1}{1+x^2}$.
 
 \begin{lstlisting}
@@ -60,8 +58,6 @@ You can use the following code to get the value of $p_n(f;x)$ at point $x$.
   double v = poly(x);
 \end{lstlisting}
 
-\subsubsection{Add an Interpolating Point}
-
 One of the advantage of Newton's interpolation is that it can add interpolating points conviniently. In this package, you can add one with the following code.
 
 \begin{lstlisting}
@@ -70,7 +66,32 @@ One of the advantage of Newton's interpolation is that it can add interpolating 
 
 It will increse the order of the polynomial \verb|poly| by one to make it coincides with $f$ at $x_{\text{new}}$ in an $O(n)$ time.
 
-\subsubsection{Output}
+\subsection{Hermite's Interpolation}
+
+Hermite's Interpolation depends not only on function values, but also deriviate values. In this package, we only support the first order deriviate.
+
+You should include the header \verb|interpolation.h|. Give your interpolating points and corresponding function values and deriviate values with three \verb|std::vector<double>|. Here is an example.
+
+\begin{lstlisting}
+  const int n = 5;
+  const double xvalues[] = {0, 3, 5, 8, 13};
+  const double fvalues[] = {0, 225, 383, 623, 993};
+  const double dfvalues[] = {75, 77, 80, 74, 72};
+  std::vector<double> x(xvalues, xvalues + n);
+  std::vector<double> f(fvalues, fvalues + n);
+  std::vector<double> df(dfvalues, dfvalues + n);
+  HermiteInterpolation hpoly(x, f, df);
+\end{lstlisting}
+
+You can get the value of the interpolation polynomial at point $x$ with the following code.
+
+\begin{lstlisting}
+  double v = poly(x);
+\end{lstlisting}
+
+\subsection{Output}
+
+The output of Newton's interpolation and Hermite's interpolation are the same, since they are both derived classes of \verb|NewtonPolynomial|.
 
 This package supports three output modes: Normal, Latex and Tikz.
 
@@ -92,65 +113,38 @@ The Tikz mode is for drawing the image of the result in the \textbf{Tikz} packag
   2+0.1*(\x+5)-0.03*(\x+5)*\x
 \end{lstlisting}
 
+Use standard IO stream to output.
+
+\begin{lstlisting}
+  std::cout << poly << std::endl;
+\end{lstlisting}
+
 The default output mode is Normal. To change it, using one of the following codes.
 
 \begin{lstlisting}
-  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_NORMAL);
-  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_LATEX);
-  NewtonInterpolation::setOutput(NewtonInterpolation::OUTPUT_TIKZ);
+  NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_NORMAL);
+  NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_LATEX);
+  NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_TIKZ);
 \end{lstlisting}
 
-\subsection{Hermite's Interpolation}
+\subsection{Standardization and Diriviate Function}
 
-Hermite's Interpolation depends not only on function values, but also deriviate values, even high order deriviate values.
-
-\subsubsection{Initializing}
-
-You should include the header \verb|interpolation.h|. Then define an Hermite interpolation polynomial.
+We provided a standard polynomial class \verb|Polynomial|. To turn a polynomial of Newton's form to the canonical form, using the following code, where \verb|poly| is an object of \verb|NewtonPolynomial| or its derived classes.
 
 \begin{lstlisting}
-  HermiteInterpolation poly;
+  Polynomial p = poly.standardize();
 \end{lstlisting}
 
-You should give your interpolating conditions like $f^{(k)}(x)=y$ with the following code.
+Get the deriviate function of a standard polynomial with the following code.
 
 \begin{lstlisting}
-  poly.addCondition(x, k, y);
+  Polynomial dp = p.diff();
 \end{lstlisting}
 
-You can get the value of the interpolation polynomial at point $x$ with the following code.
+The point value and output of standard polynomial are the same as \verb|NewtonPolynomial|. A little difference is that the Normal mode and the Latex mode are merged to one, and looks more beautiful, as following.
 
 \begin{lstlisting}
-  double v = poly(x);
-\end{lstlisting}
-
-You can get the deriviate function of $k$th order with the following code.
-
-\begin{lstlisting}
-  HermiteInterpolation dpoly = poly.diff(k);
-\end{lstlisting}
-
-\subsubsection{Output}
-
-This package supports two output modes: Latex and Tikz.
-
-The Latex mode is for showing the result as a formula in a \LaTeX document, as following
-
-\begin{lstlisting}
-  3+75x^{1}+7.16191x^{2}
-\end{lstlisting}
-
-The Tikz mode is for drawing the image of the result in the \textbf{Tikz} package, as following
-
-\begin{lstlisting}
-  3+75*\x+7.16191*\x*\x
-\end{lstlisting}
-
-The default output mode is Latex. To change it, using one of the following codes.
-
-\begin{lstlisting}
-  HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_LATEX);
-  HermiteInterpolation::setOutput(HermiteInterpolation::OUTPUT_TIKZ);
+  10+75x+7.16191x^{2}-10.0953x^{3}
 \end{lstlisting}
 
 \section{Results}
@@ -239,13 +233,13 @@ The interpolation results are too long to show. Please run the corresponding pro
 
 This figure illustrates that the Chebyshev interpolation is free of the wide oscillations in assignment B.
 
-\section{Assignment D}
+\subsection{Assignment D}
 
 Let $f(x)$ be the position at time $x$, then the vilocity at time $x$ is $f'(x)$.
 
 Interpolating with the function values and deriviate values at $0,3,5,8,13$, we can get an polynomial of order $9$, as following.
 \begin{align*}
-  f(x)=&75x^{1}+7.16191x^{2}-10.0953x^{3}+5.50812x^{4}-1.5383x^{5}+0.243041x^{6}\\
+  f(x)=&75x+7.16191x^{2}-10.0953x^{3}+5.50812x^{4}-1.5383x^{5}+0.243041x^{6}\\
   &-0.0218757x^{7}+0.00104059x^{8}-2.02236\times 10^{-5}x^{9}
 \end{align*}
 
@@ -269,7 +263,7 @@ The image of the function sees the following figure.
 
 To get the vilocity image, we can calculate the deriviate of $f$, as following.
 \begin{align*}
-  f'(x)=&75+14.3238x^{1}-30.2859x^{2}+22.0325x^{3}-7.69148x^{4}+1.45825x^{5}\\
+  f'(x)=&75+14.3238x-30.2859x^{2}+22.0325x^{3}-7.69148x^{4}+1.45825x^{5}\\
   &-0.15313x^{6}+0.00832472x^{7}-0.000182013x^{8}
 \end{align*}
 
@@ -303,6 +297,12 @@ Now we can answer the problems:
 \subsection{Assignment E}
 
 Here are the interpolating results.
+\begin{align*}
+  p_\text{sp1}(x) =& 6.67+1.77167\pi_{0}(x)+0.457833\pi_{1}(x)-0.124778\pi_{2}(x)+0.013566\pi_{3}(x)\\
+                   & -0.000978085\pi_{4}(x)+4.1477\times 10^{-5}\pi_{5}(x)\\
+  p_\text{sp2}(x) =& 6.67+1.57167\pi_{0}(x)-0.0871667\pi_{1}(x)-0.0152729\pi_{2}(x)+0.00257908\pi_{3}(x)\\
+                   & -0.000204804\pi_{4}(x)+8.6768\times 10^{-6}\pi_{5}(x)
+\end{align*}
 
 The images see the following figure.
 
@@ -313,17 +313,29 @@ The images see the following figure.
       samples=51,
     %       grid,                
     %      thick,
-      domain=0:1,
+      domain=0:30,
+      ymin = -30,
+      ymax = 48,
       legend pos=outer north east,
       smooth,
     ]
-    \addplot+[thick,no marks]{0.1334+1.063*\x+8.241*\x*(\x-0.2)-67.3803*\x*(\x-0.2)*(\x-0.333333)+219.77*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)-475.349*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)*(\x-0.566667)+604.735*\x*(\x-0.2)*(\x-0.333333)*(\x-0.433333)*(\x-0.566667)*(\x-0.666667)};
-    %\addplot+[thick,no marks]{6.67+1.57167*\x-0.0871667*\x*(\x-6)-0.0152729*\x*(\x-6)*(\x-10)+0.00257908*\x*(\x-6)*(\x-10)*(\x-13)-0.000204804*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)+8.6768e-06*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)*(\x-20)};
+    \addplot+[thick,no marks]{6.67+1.77167*\x+0.457833*\x*(\x-6)-0.124778*\x*(\x-6)*(\x-10)+0.013566*\x*(\x-6)*(\x-10)*(\x-13)-0.000978085*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)+4.1477e-05*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)*(\x-20)};
+    \addplot+[thick,no marks]{6.67+1.57167*\x-0.0871667*\x*(\x-6)-0.0152729*\x*(\x-6)*(\x-10)+0.00257908*\x*(\x-6)*(\x-10)*(\x-13)-0.000204804*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)+8.6768e-06*\x*(\x-6)*(\x-10)*(\x-13)*(\x-17)*(\x-20)};
     \addlegendentry{sp1}
-    %\addlegendentry{sp2}
+    \addlegendentry{sp2}
     \end{axis}
   \end{tikzpicture}
 \end{center}
+
+In fact, that's not an acceptable result. Following the result below, the larvaes in sp1 died soon after birth, then reborned at about the 5th day. Morever, the larvaes will have eternal lives. The average weight after another 15 days is
+\begin{align*}
+  p_\text{sp1}(43) = 14640.3\\
+  p_\text{sp2}(43) = 2981.48
+\end{align*}
+
+Amazing.
+
+This problem shows that predicting the trend with high-order polynomial interpolation is ridiculous.
 
 \section{Summary}
 

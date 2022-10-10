@@ -57,7 +57,8 @@ public:
             else if(outputMode == OUTPUT_LATEX){
                 curs.str("");
                 curs.clear();
-                curs << "*x^{" << i + 1 << "}";
+                if(i == 0) curs << "x";
+                else curs << "x^{" << i + 1 << "}";
             }
         }
         return out;
