@@ -191,4 +191,280 @@ The results are shown as the following table.
   We can't use relative error since $r$ might be zero.
 \end{solution}
 
+\chapter{Polynomial Interpolation}
+
+\begin{problem}
+  For $f\in\mathcal{C}^2[x_0,x_1]$ and $x\in(x_0,x_1)$, linear interpolation of $f$ at $x_0$ and $x_1$ yields
+  \begin{equation}
+    f(x)-p_1(f;x) = \frac{f''(\xi(x))}{2}(x-x_0)(x-x_1)
+  \end{equation}
+
+  Consider the case $f(x)=\frac{1}{x},\;x_0=1,\;x_1=2$.
+  \begin{itemize}
+    \item Determine $\xi(x)$ explicity.
+    \item Extend the domain of $\xi$ continuously from $(x_0,x_1)$ to $[x_0,x_1]$. Find $\max \xi(x)$, $\min \xi(x)$ and
+    
+    $\max f''(\xi(x))$.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item The Lagrange's formula yields
+    \begin{equation*}
+      p_1(f;x) = \frac{(x-2)}{(1-2)} + \frac{1}{2}\times \frac{(x-1)}{(2-1)} = -\frac{1}{2}x+\frac{3}{2}
+    \end{equation*}
+    Substitute it to (2.1), with $f''(x)=2x^{-3}$, yield
+    \begin{equation*}
+      \frac{1}{x}+\frac{1}{2}x-\frac{3}{2} = (x-1)(x-2)\xi^{-3}(x)
+    \end{equation*}
+    The result follows from it:
+    \begin{equation*}
+      \xi(x)=\sqrt[3]{2x}
+    \end{equation*}
+
+    \item $\xi(x)$ is increasing in $[1,2]$, hence
+    \begin{equation*}
+      \max \xi(x)=\xi(2)=\sqrt[3]{4},\qquad \min \xi(x)=\xi(1) = \sqrt[3]{2}
+    \end{equation*}
+    Also
+    \begin{equation*}
+      f''(\xi(x))=2\left(\sqrt[3]{2x}\right)^{-3}=\frac{1}{x}
+    \end{equation*}
+    is decreasing in $[1,2]$, hence
+    \begin{equation*}
+      \max f''(\xi(x)) = f''(\xi(1)) = 1
+    \end{equation*}
+  \end{enumerate}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Let $\mathbb{P}_m^+$ be the set of all polynomials of degree $\leq m$ that are non-negative on the real line,
+  \begin{equation*}
+    \mathbb{P}_m^+ = \{p:p\in \mathbb{P}_m,\; \forall x\in \mathbb{R}, \; p(x)\geq 0\}
+  \end{equation*}
+  Find $p\in \mathbb{P}_{2n}^+$ such that $p(x_i)=f_i$ for $i=0,1,...,n$ where $f_i\geq 0$ and $x_i$ are distinct points on $\mathbb{R}$.
+\end{problem}
+
+\begin{solution}
+  Let $q(x)\in\mathbb{P}_n$ be the unique interpolation polynomial satisfies
+  \begin{equation*}
+    q(x_i)=\sqrt{f_i},\qquad i=0,1,...,n
+  \end{equation*}
+  Let $p(x)=q^2(x)$, then $p(x)\in \mathbb{P}_{2n}^+$ and
+  \begin{equation*}
+    p(x_i)=q^2(x_i)=f_i,\qquad i=0,1,...,n
+  \end{equation*}
+  Hence $p(x)$ is what we need. The Lagrange's interpolation formula yields:
+  \begin{equation*}
+    p(x)=\left(\sum_{i=0}^n \sqrt{f_i}\prod_{j=0,j\neq i}^n \frac{x-x_j}{x_i-x_j}\right)^2
+  \end{equation*}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Cnosider $f(x)=e^x$.
+  \begin{itemize}
+    \item Prove by induction that
+    \begin{equation}
+      \forall t\in \mathbb{R}, \qquad f[t,t+1,...,t+n]=\frac{(e-1)^n}{n!}e^t
+    \end{equation}
+    \item From Corollary 2.22 we know
+    \begin{equation}
+      \exists \xi\in(0,n) \; \text{s.t.} \; f[0,1,...,n]=\frac{1}{n!}f^{(n)}(\xi)
+    \end{equation}
+    Determine $\xi$ from the above two equations. Is $\xi$ located to the left or to the right of the midpoint $n/2$.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item The Lagrange's formuula yields
+    \begin{equation*}
+      p(f;x) = \sum_{k=0}^n e^{t+k} \prod_{j=0,j\neq k}^n \frac{x-x_j}{x_k-x_j} = e^t\sum_{k=0}^n e^{k} \frac{(-1)^{n-k}\prod_{j=0,j\neq k}^nx-x_j}{k!(n-k)!}
+    \end{equation*}
+    Hence
+    \begin{equation*}
+      f[t,t+1,...,t+n] = e^t\sum_{k=0}^n \frac{(-1)^{n-k}e^k}{k!(n-k)!} = \frac{e^t}{n!}\sum_{k=0}^n \binom{n}{k}(-1)^{n-k}e^k = \frac{(e-1)^n}{n!}e^t
+    \end{equation*}
+
+    \item Let $t=0$ in (2.2) and yield
+    \begin{equation*}
+      f[0,1,...,n]=\frac{(e-1)^n}{n!}
+    \end{equation*}
+    Substitute it to (2.3), with $f^{(n)}(x)=e^x$, yield
+    \begin{equation*}
+      \frac{(e-1)^n}{n!} = \frac{e^\xi}{n!}
+    \end{equation*}
+    The result follows from it:
+    \begin{equation*}
+      \xi=n\ln(e-1)>\frac{n}{2}
+    \end{equation*}
+    Hence $\xi$ is located to the right of the midpoint.
+  \end{enumerate}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Consider $f(0)=5,\; f(1)=3,\; f(3)=5,\; f(4)=12$.
+  \begin{itemize}
+    \item Use the Newton's formula to obtain $p_3(f;x)$;
+    \item The data suggests that $f$ has a minimum in $x\in(1,3)$. Find an approximate value for the location $x_\text{min}$ of the minimum.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item The result follows from Newton's interpolation formula:
+    \begin{equation*}
+      p_3(f;x)=5-2x+x(x-1)+\frac{1}{4}x(x-1)(x-3)
+    \end{equation*}
+    Transform it into the canonical form:
+    \begin{equation*}
+      p_3(f;x)=\frac{1}{4}x^{3}-\frac{9}{4}x + 5
+    \end{equation*}
+    \item Firstly, calculate the derivative of $p_3(f;x)$:
+    \begin{equation*}
+      p'_3(f;x)=\frac{3}{4}x^{2}-\frac{9}{4}
+    \end{equation*}
+    The first-order necessary condition $p'_3(f;x)=0$ yields that
+    \begin{equation*}
+      x_\text{extreame} = \pm \sqrt{3}
+    \end{equation*}
+    In $x\in(1,3)$, the extreame point might be $x^*=\sqrt{3}$. The second-order condition shows that
+    \begin{equation*}
+      p''_3(f;x^*)=\frac{3}{2}x^* = \frac{3\sqrt{3}}{2} > 0
+    \end{equation*}
+    Hence $x^*$ is the minimum, and $x_\text{min}=\sqrt{3}\approx 1.73205$.
+  \end{enumerate}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Consider $f(x)=x^7$.
+  \begin{itemize}
+    \item Compute $f[0,1,1,1,2,2]$.
+    \item We konw that this devided difference is expressible in terms of the $5$th derivative of $f$ evaluated at some $\xi\in(0,2)$. Determine $\xi$.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item Solve the Hermite's interpolation with a difference table. The result of Newton's form follows:
+    \begin{equation*}
+      p(x)=x+6x(x-1)+15x(x-1)^2+42x(x-1)^3+30x(x-1)^3(x-2)
+    \end{equation*}
+    Hence
+    \begin{equation*}
+      f[0,1,1,1,2,2]=30
+    \end{equation*}
+
+    \item The $5$th derivate of $f$ is
+    \begin{equation*}
+      f^{(5)}(x)=2520x^2
+    \end{equation*}
+    Then $f^{(5)}(x)=f[0,1,1,1,2,2]$ yields
+    \begin{equation*}
+      2520\xi^2=30 \qquad \implies \qquad \xi=\sqrt{\frac{1}{84}}=\frac{1}{2\sqrt{21}}\approx 0.1091\in(0,2)
+    \end{equation*}
+  \end{enumerate}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  $f$ is a function on $[0,3]$ for which one knows that
+  \begin{equation*}
+    f(0)=1,\quad f(1)=2,\quad f'(1)=-1,\quad f(3)=f'(3)=0
+  \end{equation*}
+  \begin{itemize}
+    \item Estimate $f(2)$ using Hermite's interpolation.
+    \item Estimate the maximum possible error of the above answer if one konws, in addition, that $f\in \mathcal{C}^5[0,3]$ and $|f^{(5)}(x)|\leq M$ on $[0,3]$. Express the answer in terms of $M$.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item The Hermite's interpolation gives that
+    \begin{equation*}
+      p(x)=1+x-2x(x-1)+\frac{2}{3}x(x-1)^2-\frac{5}{36}x(x-1)^2(x-3)
+    \end{equation*}
+    Hence, estimate $f(2)$ as
+    \begin{equation*}
+      f(2)\approx p(2)= \frac{11}{18} \approx 0.611111
+    \end{equation*}
+
+    \item Theorem 2.35 gives that
+    \begin{equation*}
+      f(x)-p(x)=\frac{f^{(5)}(\xi)}{120}x(x-1)^2(x-3)^2
+    \end{equation*}
+    The result follows directly:
+    \begin{equation*}
+      |f(2)-p(2)|=\left|\frac{f^{(5)}(\xi)}{60}\right| \leq \frac{M}{60}
+    \end{equation*}
+  \end{enumerate}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Define foward difference by
+  \begin{align*}
+    \Delta f(x) = f(x+h) - f(x) ,\qquad \Delta^{k+1} f(x) = \Delta \Delta^k f(x) = \Delta^k f(x+h) - \Delta^k f(x)
+  \end{align*}
+  and backward difference by
+  \begin{align*}
+    \nabla f(x) = f(x) - f(x-h), \qquad \nabla^{k+1} f(x) = \nabla \nabla^k f(x) = \nabla^k f(x) - \nabla^k f(x-h)
+  \end{align*}
+  Prove
+  \begin{align}
+    \Delta^k f(x) &= k!h^kf[x_0,x_1,...,x_k]\\
+    \nabla^k f(x) &= k!h^kf[x_0,x_{-1},...,x_{-k}]
+  \end{align}
+  where $x_j=x+jh$.
+\end{problem}
+
+\begin{solution}
+ The Lagrange's interpolation formula yields
+ \begin{equation*}
+  f[x_0,x_1,...,x_k] = \sum_{i=0}^k f(x_i) \frac{1}{\prod_{j=1,j\neq i}^k (x_i-x_j)} = \sum_{i=0}^k \frac{(-1)^{k-i}f(x+ih)}{h^ki!(k-i)!}
+ \end{equation*}
+ It yields an equivalent form of (2.4):
+ \begin{equation}
+  \Delta^k f(x)=k!h^kf[x_0,x_1,...,x_k]=\sum_{i=0}^k \binom{k}{i}(-1)^{k-i}f(x+ih)
+ \end{equation}
+ Now prove (2.6) by an induction. For $k=1$, it could be verified directly:
+ \begin{equation*}
+  \binom{1}{0}(-1)^{1-0}f(x) + \binom{1}{1}(-1)^{1-1}f(x+h) = f(x+h)-f(x) = \Delta f(x)
+ \end{equation*}
+ Suppose (2.6) holds for some $k\geq 1$, then
+ \begin{align*}
+  \Delta^{k+1}f(x) &= \Delta\left(\sum_{i=0}^k \binom{k}{i}(-1)^{k-i}f(x+ih)\right)\\
+  &= \sum_{i=0}^k \binom{k}{i}(-1)^{k-i}f(x+(i+1)h) - \sum_{i=0}^k \binom{k}{i}(-1)^{k-i}f(x+ih)\\
+  &= f(x+(k+1)h) - (-1)^kf(x) + \sum_{i=1}^k \left(\binom{k}{i-1}(-1)^{k+1-i}f(x+ih)-\binom{k}{i}(-1)^{k-i}f(x+ih)\right)\\
+  &= f(x+(k+1)h) + (-1)^{k+1}f(x) + \sum_{i=1}^k (-1)^{k+1-i}f(x+ih)\left(\binom{k}{i-1}+\binom{k}{i}\right)\\
+  &= f(x+(k+1)h) + (-1)^{k+1}f(x) + \sum_{i=1}^k \binom{k+1}{i}(-1)^{k+1-i}f(x+ih)\\
+  &= \sum_{i=0}^{k+1} \binom{k+1}{i}(-1)^{k+1-i}f(x+ih)
+ \end{align*}
+ It shows that (2.6) holds for $(k+1)$. Hence (2.4) is proved by induction. Now we prove that
+ \begin{equation}
+  \Delta^k f(x) = \nabla^k f(x+kh)
+ \end{equation}
+ by an induction. For $k=1$, it could be verified directly:
+ \begin{equation*}
+  \Delta f(x) = f(x+h)-f(x) = \nabla f(x+h)
+ \end{equation*}
+ Suppose (2.7) holds for some $k\geq 1$, then
+ \begin{align*}
+  \Delta^{k+1} f(x) &= \Delta\left(\Delta^k f(x)\right) = \Delta \left(\nabla^k f(x+kh)\right) = \nabla^k f(x+(k+1)h) - \nabla^k f(x+kh) \\
+  &= \nabla\left(\nabla^k f(x+(k+1)h)\right) = \nabla^{k+1}f(x+(k+1)h)
+ \end{align*}
+ Hence (2.7) is proved by induction. Finally, (2.5) follows immediately from (2.4),(2.7) and Corollary 2.15.
+\end{solution}
+
 \end{document}
