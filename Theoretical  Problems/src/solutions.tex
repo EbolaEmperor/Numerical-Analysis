@@ -467,4 +467,166 @@ The results are shown as the following table.
  Hence (2.7) is proved by induction. Finally, (2.5) follows immediately from (2.4),(2.7) and Corollary 2.15.
 \end{solution}
 
+\vspace{1.5em}
+
+\begin{problem}
+  Assume $f$ is differentiable at $x_0$. Prove
+  \begin{equation}
+    \frac{\partial}{\partial x_0} f[x_0,x_1,...,x_n] = f[x_0,x_0,x_1,...,x_n]
+  \end{equation}
+  What about the partial derivate with respect to one of the other variables?
+\end{problem}
+
+\begin{solution}
+  Firstly, follows from Definition 2.34, we have
+  \begin{equation*}
+    \frac{\partial}{\partial x_0}f[x_0]=f'(x_0)=f[x_0,x_0]
+  \end{equation*}
+  Prove (2.8) by an induction on $n$. For $n=1$, verify it directly:
+
+  \begin{align*}
+    \frac{\partial}{\partial x_0} f[x_0,x_1] &= \frac{\partial}{\partial x_0}\left(\frac{f[x_1]-f[x_0]}{x_1-x_0}\right)\\
+    &= \frac{-(x_1-x_0)\frac{\partial}{\partial x_0}f[x_0]+f[x_1]-f[x_0]}{(x_1-x_0)^2}\\
+    &= \frac{f[x_0,x_1]-f[x_0,x_0]}{x_1-x_0}\\
+    & = f[x_0,x_0,x_1]
+  \end{align*}
+  Suppose (2.8) holds for some $n\geq 1$, then
+  \begin{align*}
+    \frac{\partial}{\partial x_0} f[x_0,x_1,...,x_{n+1}] &= \frac{\partial}{\partial x_0}\left(\frac{f[x_1,...,x_{n+1}]-f[x_0,...,x_{n}]}{x_{n+1}-x_0}\right)\\
+    &= \frac{-(x_{n+1}-x_0)\frac{\partial}{\partial x_0}f[x_0,x_1,...,x_{n}]+f[x_1,...,x_{n+1}]-f[x_0,...,x_n]}{(x_{n+1}-x_0)^2}\\
+    &= \frac{-(x_{n+1}-x_0)f[x_0,x_0,x_1,...,x_{n}]+f[x_1,...,x_{n+1}]-f[x_0,...,x_n]}{(x_{n+1}-x_0)^2}\\
+    &= \frac{-f[x_0,x_0,x_1,...,x_{n}]+f[x_0,x_1,...,x_{n+1}]}{x_{n+1}-x_0}\\
+    & = f[x_0,x_0,x_1,...,x_{n+1}]
+  \end{align*}
+  It shows that (2.8) holds for $(n+1)$, hence proved. Morever, the order of $x_0,...,x_n$ is not important, hence
+  \begin{equation*}
+    \frac{\partial}{\partial x_j} f[x_0,x_1,...,x_n] = f[x_0,...,x_{j-1},x_j,x_j,x_{j+1},...,x_n], \qquad \forall j=0,...,n
+  \end{equation*}
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  (A min-max problem) For $n\in\mathbb{N}^+$, determine
+  \begin{equation}
+    \min \max_{x\in[a,b]} |a_0x^n+a_1x^{n-1}+...+a_n|
+  \end{equation}
+  where $a_0\neq 0$ is fixed and the minimum is taken over all $a_i\in\mathbb{R},\;i=1,2,...,n$.
+\end{problem}
+
+\begin{solution}
+  The map
+  \begin{equation*}
+    p(x) \mapsto q(x)=\frac{1}{a_0}p\left(a+\frac{b-a}{2}(x+1)\right)
+  \end{equation*}
+  yields a bisection relation between polynomials of degree $n$ defines in $[a,b]$ with leading coefficient $a_0$ and polynomials of degree $n$ defines in $[0,1]$ with leading coefficient $1$. Chebyshev's Theorem gives that
+  \begin{equation*}
+    \forall q\in \tilde{\mathbb{P}}_n, \qquad \max_{x\in[-1,1]} \left|\frac{T_n(x)}{2^{n-1}}\right|\leq \max_{x\in[-1,1]} |q(x)|
+  \end{equation*}
+  where $T_n$ is the Chebysheve's polynomial of oeder $n$. Hence the solution of the min-max problem $p_\text{min}(x)$ satisfies
+  \begin{equation*}
+    \frac{1}{a_0}p_\text{min}\left(a+\frac{b-a}{2}(x+1)\right)=\frac{T_n(x)}{2^{n-1}}
+  \end{equation*}
+  The result follows immediately:
+  \begin{equation*}
+    p_\text{min}(x)=\frac{a_0}{2^{n-1}}T_n\left(\frac{2}{b-a}(x-a)-1\right)
+  \end{equation*}
+  The min value in (2.8) is $\frac{|a_0|}{2^{n-1}}$.
+\end{solution}
+
+\begin{problem}
+  (Imitate the proof of Chebyshev's Theorem) Express the Chebyshev polynomial of degree $n\in\mathbb{N}$ as a polynomial $T_n$ and change its domain from $[-1,1]$ to $\mathbb{R}$. For a fixed $a>1$, define $\mathbb{P}_n^a := \{p\in\mathbb{P}_n:p(a)=1\}$ and a polynomial $\hat{p}_n(x)\in\mathbb{P}_n^a$,
+  \begin{equation*}
+    \hat{p}_n(x) := \frac{T_n(x)}{T_n(a)}
+  \end{equation*}
+  Prove
+  \begin{equation*}
+    \forall p\in \mathbb{P}_n^a,\qquad ||\hat{p}_n||_\infty \leq ||p||_\infty
+  \end{equation*}
+  where the max-norm of a function $f:\mathbb{R}\to\mathbb{R}$ is defined as $||f||_\infty = \max_{x\in[-1,1]}|f(x)|$.
+\end{problem}
+
+\begin{solution}
+  First we know that $||\hat{p}_n||_\infty=\frac{1}{|T_n(a)|}$. And by the property of $T_n$ we have
+  \begin{equation*}
+    \hat{p}_n(x)(x'_k) = \frac{(-1)^k}{T_n(a)} \quad \text{for} \quad x'_k=\cos\frac{k}{n}\pi,\;k=0,1,...,n
+  \end{equation*}
+  Now we prove the conclution by using reduction to absurdity. Suppose that:
+  \begin{equation*}
+    \exists p\in \mathbb{P}_n^a,\quad \text{s.t.} \quad ||p||_\infty<\frac{1}{|T_n(a)|}
+  \end{equation*}
+  Let $q(x)=p(x)-\hat{p}_n(x)\in \mathbb{P}_n$, then $q(a)=0$. And
+  \begin{equation*}
+    q(x'_k) = p(x'_k) - \frac{(-1)^k}{T_n(a)},\quad k=0,1,...,n
+  \end{equation*}
+  We have $\text{sgn}(q(x'_k))\neq \text{sgn}(q(x'_{k-1}))$ for $k=1,...,n$ since $||p||_\infty<\frac{1}{|T_n(a)|}$. By the continuity of $q$,
+  \begin{equation*}
+    \exists -1=x_n<\xi_n<x_{n-1}<...<x_{1}<\xi_1<x_0=1, \quad \text{s.t.} \quad q(\xi_1)=\cdots =q(\xi_n)=0
+  \end{equation*}
+  However, $q(a)=0$ and $a>1$ shows that $q$ has at least $n+1$ zero points, that contradict to $q\in\mathbb{P}_n$.
+\end{solution}
+
+\vspace{1.5em}
+
+\begin{problem}
+  Prove Lemma 2.48:
+  \begin{align}
+    \forall k=0,1,...,n, \forall t\in(0,1),\quad b_{n,k}(t)>0 \\
+    \sum_{k=0}^n b_{n,k}(t)=1\\
+    \sum_{k=0}^n kb_{n,k}(t) = nt\\
+    \sum_{k=0}^n (k-nt)^2b_{n,k}(t)=nt(1-t)
+  \end{align}
+  where
+  \begin{equation*}
+    b_{n,k}(t) = \binom{n}{k}t^k(1-t)^{n-k}
+  \end{equation*}
+\end{problem}
+
+\begin{solution}
+  (2.10) is clearly since $t\in(0,1)$.
+  
+  By the Binomial Theorem we have:
+  \begin{equation*}
+    1 = (t+(1-t))^n = \sum_{k=0}^n \binom{n}{k}t^k(1-t)^{n-k} = \sum_{k=0}^n b_{n,k}(t)
+  \end{equation*}
+  Hence (2.11) is proved.
+
+  Again, by the Binomial Theorem we have:
+  \begin{equation*}
+    (p+q)^n=\sum_{k=0}^n \binom{n}{k}p^k q^{n-k}
+  \end{equation*}
+  Partial derivate with respect to $p$ to both sides yields:
+  \begin{equation*}
+    n(p+q)^{n-1}=\sum_{k=0}^n \binom{n}{k}kp^{k-1} q^{n-k}
+  \end{equation*}
+  Multiple a $p$ to both sides, yield
+  \begin{equation}
+    np(p+q)^{n-1}=\sum_{k=0}^n \binom{n}{k}kp^k q^{n-k}
+  \end{equation}
+  Now take $p=t$ and $q=1-t$, yield
+  \begin{equation*}
+    np=\sum_{k=0}^n \binom{n}{k}kt^k (1-t)^{n-k} = \sum_{k=0}^n kb_{n,k}(t)
+  \end{equation*}
+  Hence (2.12) is proved.
+
+  Follows from (2.14), partial derivate again with respect to $p$ to both sides yields:
+  \begin{equation*}
+    n(p+q)^{n-1} + n(n-1)p(p+q)^{n-2} =\sum_{k=0}^n \binom{n}{k}k^2p^{k-1} q^{n-k}
+  \end{equation*}
+  Multiple a $p$ to both sides, yield
+  \begin{equation*}
+    np(p+q)^{n-1} + n(n-1)p^2(p+q)^{n-2} =\sum_{k=0}^n \binom{n}{k}k^2p^k q^{n-k}
+  \end{equation*}
+  Now take $p=t$ and $q=1-t$, yield
+  \begin{equation*}
+    nt + n(n-1)t^2 = \sum_{k=0}^n k^2 b_{n,k}(t)
+  \end{equation*}
+  By (2.11),(2,12) and the result abouve, we got:
+  \begin{align*}
+    \sum_{k=0}^n (k-nt)^2b_{n,k}(t) &= \sum_{k=0}^n k^2b_{n,k}(t) - 2nt\sum_{k=0}^n kb_{n,k}(t) + (nt)^2\sum_{k=0}^n b_{n,k}(t)\\
+    &= nt + n(n-1)t^2 - 2(nt)^2 + (nt)^2 = nt - nt^2 = nt(1-t)
+  \end{align*}
+  Hence (2.13) is proved.
+\end{solution}
+
 \end{document}
