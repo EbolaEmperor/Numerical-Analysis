@@ -14,6 +14,9 @@ int main(){
     Polynomial poly = hpoly.standardize();
     Polynomial dpoly = poly.diff();
 
+    HermiteInterpolation test(hpoly);
+    std::cout << "[test] " << test.standardize() << std::endl;
+
     Polynomial::setOutput(Polynomial::OUTPUT_LATEX);
     std::cout << poly << std::endl << std::endl;
     std::cout << poly(10) << std::endl << std::endl;

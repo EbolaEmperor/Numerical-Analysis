@@ -47,7 +47,7 @@ public:
         }
     }
 
-    friend std::ostream & operator << (std::ostream & out, Polynomial & ni){
+    friend std::ostream & operator << (std::ostream & out, const Polynomial & ni){
         std::stringstream curs;
         for(int i = 0; i <= ni.n; i++){
             out << ni.coef[i] << curs.str();
@@ -118,17 +118,15 @@ private:
 
 protected:
     std::vector<double> x;
-    std::vector<double> diffTable;
     std::vector<double> coef;
     int n;
 
 public:
     NewtonPolynomial(){n = 0;}
     NewtonPolynomial(const NewtonPolynomial & p):
-        x(p.x), diffTable(p.diffTable), coef(p.coef), n(p.n) {}
+        x(p.x), coef(p.coef), n(p.n) {}
     ~NewtonPolynomial(){
         x.clear();
-        diffTable.clear();
         coef.clear();
     }
 
@@ -156,7 +154,7 @@ public:
         }
     }
 
-    friend std::ostream & operator << (std::ostream & out, NewtonPolynomial & ni){
+    friend std::ostream & operator << (std::ostream & out, const NewtonPolynomial & ni){
         std::stringstream curs;
         for(int i = 0; i <= ni.n; i++){
             out << ni.coef[i] << curs.str();
@@ -209,7 +207,17 @@ public:
 int NewtonPolynomial::outputMode = 0;
 
 class HermiteInterpolation : public NewtonPolynomial{
+private:
+    std::vector<double> diffTable;
+
 public:
+    HermiteInterpolation(const HermiteInterpolation & rhs):
+        NewtonPolynomial(rhs), diffTable(rhs.diffTable) {}
+    ~HermiteInterpolation(){
+        diffTable.clear();
+    }
+
+    // 添加插值点，若同一个插值点newx被连续添加多次，则第k个对应的newf值，会被视为newx处的(k-1)阶导数值
     void addPoint(const double &newx, const double &newf){
         n++;
         static double fac = 1.0;
@@ -235,7 +243,7 @@ public:
         coef.push_back(newv);
     }
 
-    HermiteInterpolation(std::vector<double> & _x, std::vector<double> & _f){ 
+    HermiteInterpolation(const std::vector<double> & _x, const std::vector<double> & _f){ 
         n = -1;
         if(_x.size() != _f.size()){
             std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
