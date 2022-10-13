@@ -94,8 +94,6 @@ You can get the value of the interpolation polynomial at point $x$ with the foll
 
 \subsection{Output}
 
-The output of Newton's interpolation and Hermite's interpolation are the same, since they are both derived classes of \verb|NewtonPolynomial|.
-
 This package supports three output modes: Normal, Latex and Tikz.
 
 The Normal mode is for human to read directly, as following
@@ -122,7 +120,7 @@ Use standard IO stream to output.
   std::cout << poly << std::endl;
 \end{lstlisting}
 
-The default output mode is Normal. To change it, using one of the following codes.
+The default output mode is Normal. To change it, use one of the following codes.
 
 \begin{lstlisting}
   NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_NORMAL);
@@ -130,7 +128,7 @@ The default output mode is Normal. To change it, using one of the following code
   NewtonPolynomial::setOutput(NewtonPolynomial::OUTPUT_TIKZ);
 \end{lstlisting}
 
-\subsection{Standardization and Diriviate Function}
+\subsection{Canonical Polynomials}
 
 We provided a standard polynomial class \verb|Polynomial|. To turn a polynomial of Newton's form to the canonical form, using the following code, where \verb|poly| is an object of \verb|NewtonPolynomial| or its derived classes.
 
@@ -148,6 +146,13 @@ The point value and output of standard polynomial are the same as \verb|NewtonPo
 
 \begin{lstlisting}
   10+75x+7.16191x^{2}-10.0953x^{3}
+\end{lstlisting}
+
+To change the output mode, use one of the following codes.
+
+\begin{lstlisting}
+  Polynomial::setOutput(Polynomial::OUTPUT_LATEX);
+  Polynomial::setOutput(Polynomial::OUTPUT_TIKZ);
 \end{lstlisting}
 
 \section{Results}
