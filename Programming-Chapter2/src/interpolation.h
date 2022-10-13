@@ -208,43 +208,25 @@ public:
 
 int NewtonPolynomial::outputMode = 0;
 
-class NewtonInterpolation : public NewtonPolynomial{
-public:
-    // 添加一个插值点，复杂度为O(n)，允许在构造函数外调用
-    void addPoint(const double &newx, const double &newf){
-        n++;
-        x.push_back(newx);
-        double newv = newf;
-        for(int j = 1; j <= n; j++){
-            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
-            diffTable[j-1] = newv;
-            newv = tmp;
-        }
-        diffTable.push_back(newv);
-        coef.push_back(newv);
-    }
-
-    NewtonInterpolation(std::vector<double> & _x, std::vector<double> & _f){ 
-        n = -1;
-        if(_x.size() != _f.size()){
-            std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
-            exit(-1);
-        }
-        for(int i = 0; i < _x.size(); i++)
-            addPoint(_x[i], _f[i]);
-    }
-};
-
 class HermiteInterpolation : public NewtonPolynomial{
 public:
-    void addPoint(const double &newx, const double &newf, const int &k){
+    void addPoint(const double &newx, const double &newf){
         n++;
-        x.push_back(newx);
         static double fac = 1.0;
-        if(k==0) fac = 1.0;
-        else fac *= k;
+        static int k = 0;
+        if(!x.empty() && newx == x.back()){
+            fac *= (++k);
+        } else {
+            fac = 1.0;
+            k = 0;
+        }
+        x.push_back(newx);
         double newv = newf / fac;
         for(int j = 1 + k; j <= n; j++){
+            if(x[n] == x[n-j]){
+                std::cerr << "[Error] The interpolating point " << x[n] << " appears in a wrong position!" << std::endl;
+                exit(-1);
+            }
             double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
             diffTable[j-1] = newv;
             newv = tmp;
@@ -263,9 +245,11 @@ public:
         for(int i = 0; i < _x.size(); i++){
             if(i && _x[i] == _x[i-1]) k++;
             else k = 0;
-            addPoint(_x[i], _f[i], k);
+            addPoint(_x[i], _f[i]);
         }
     }
 };
+
+typedef HermiteInterpolation NewtonInterpolation;
 
 #endif
