@@ -368,9 +368,9 @@ The results are shown as the following table.
     \begin{equation*}
       f^{(5)}(x)=2520x^2
     \end{equation*}
-    Then $f^{(5)}(x)=f[0,1,1,1,2,2]$ yields
+    Then $\frac{f^{(5)}(x)}{5!}=f[0,1,1,1,2,2]$ yields
     \begin{equation*}
-      2520\xi^2=30 \qquad \implies \qquad \xi=\sqrt{\frac{1}{84}}=\frac{1}{2\sqrt{21}}\approx 0.1091\in(0,2)
+      \frac{2520}{5!}\xi^2=30 \qquad \implies \qquad \xi=\sqrt{\frac{10}{7}}\approx 1.42857\in(0,2)
     \end{equation*}
   \end{enumerate}
 \end{solution}
@@ -549,7 +549,7 @@ The results are shown as the following table.
 \begin{solution}
   First we know that $||\hat{p}_n||_\infty=\frac{1}{|T_n(a)|}$. And by the property of $T_n$ we have
   \begin{equation*}
-    \hat{p}_n(x)(x'_k) = \frac{(-1)^k}{T_n(a)} \quad \text{for} \quad x'_k=\cos\frac{k}{n}\pi,\;k=0,1,...,n
+    \hat{p}_n(x'_k) = \frac{(-1)^k}{T_n(a)} \quad \text{for} \quad x'_k=\cos\frac{k}{n}\pi,\;k=0,1,...,n
   \end{equation*}
   Now we prove the conclution by using reduction to absurdity. Suppose that:
   \begin{equation*}
@@ -605,7 +605,7 @@ The results are shown as the following table.
   \end{equation}
   Now take $p=t$ and $q=1-t$, yield
   \begin{equation*}
-    np=\sum_{k=0}^n \binom{n}{k}kt^k (1-t)^{n-k} = \sum_{k=0}^n kb_{n,k}(t)
+    nt=\sum_{k=0}^n \binom{n}{k}kt^k (1-t)^{n-k} = \sum_{k=0}^n kb_{n,k}(t)
   \end{equation*}
   Hence (2.12) is proved.
 
