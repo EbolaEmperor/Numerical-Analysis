@@ -15,7 +15,7 @@ int main(){
 
     T_HermiteInterpolation<fraction> poly1(x, sp1);
 
-    std::cerr << poly1 << std::endl;
+    //std::cerr << poly1 << std::endl;
     std::cerr << poly1.standardize() << std::endl;
     return 0;
 }

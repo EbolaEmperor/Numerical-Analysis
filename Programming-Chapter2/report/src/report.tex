@@ -345,6 +345,24 @@ Amazing.
 
 This problem shows that predicting the trend with high-order polynomial interpolation is ridiculous.
 
+\section{Extension}
+
+This pakage supports more data types rather than \verb|double|. For example, if you want to know the exact interpolation polynomial, which may be expressed with high-precision fractions. You could include the pakage \verb|fraction.h| first. And define a interpolation by:
+
+\begin{lstlisting}
+  T_HermiteInterpolation<fraction> poly1(x, sp1);
+\end{lstlisting}
+
+The detail sees example code \verb|test_Hermite_with_fraction.cpp|. The output is:
+
+\begin{lstlisting}
+  1+49/12x-155/36x^{2}+49/36x^{3}-5/36x^{4}
+\end{lstlisting}
+
+The computation speed is not very fast. That's because the fraction libery and the big-integer libery it depends are naive implementations without any optimization. But it does help to seeing the exact interpolation polynomials. In other words, I can calculate my theretical homeworks with this.
+
+Actually, you could modify \verb|fraction| to any other fields, such as $\mathbb{Z}_p$ and $\mathbb{C}$. Define a field class and provide basic operations, then you could use the interpolation in your field.
+
 \section{Summary}
 
 The figures in this report are drawn with \textbf{Tikz}.
