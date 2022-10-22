@@ -182,7 +182,7 @@ public:
             else if(outputMode == OUTPUT_LATEX){
                 curs.str("");
                 curs.clear();
-                curs << "\\pi_{" << i << "}(x)";
+                curs << "\\pi_{" << i+1 << "}(x)";
             }
         }
         return out;

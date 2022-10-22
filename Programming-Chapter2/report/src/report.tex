@@ -105,7 +105,7 @@ The Normal mode is for human to read directly, as following
 The Latex mode is for showing the result as a formula in a \LaTeX document, as following
 
 \begin{lstlisting}
-  2+0.1\pi_{0}(x)-0.03\pi_{1}(x)
+  2+0.1\pi_{1}(x)-0.03\pi_{2}(x)
 \end{lstlisting}
 
 The Tikz mode is for drawing the image of the result in the \textbf{Tikz} package, as following
@@ -161,12 +161,12 @@ To change the output mode, use one of the following codes.
 
 Here are the Newton's interpolation results.
 \begin{align*}
-  p_2(f;x) &= 0.0384615+0.192308\pi_{0}(x)-0.0384615\pi_{1}(x)\\
-  p_4(f;x) &= 0.0384615+0.0397878\pi_{0}(x)+0.061008\pi_{1}(x)-0.0265252\pi_{2}(x)+0.00530504\pi_{3}(x)\\
-  p_6(f;x) &= 0.0384615+0.0264644\pi_{0}(x)+0.0248454\pi_{1}(x)+0.0149446\pi_{2}(x)-0.0131699\pi_{3}(x)\\
-           &  +0.00420316\pi_{4}(x)-0.000840633\pi_{5}(x)\\
-  p_8(f;x) &= 0.0384615+0.0223428\pi_{0}(x)+0.013956\pi_{1}(x)+0.0117043\pi_{2}(x)+0.000674338\pi_{3}(x)\\
-           &  -0.00489646\pi_{4}(x)+0.00243964\pi_{5}(x)-0.000687223\pi_{6}(x)+0.000137445\pi_{7}(x)
+  p_2(f;x) &= 0.0384615+0.192308\pi_{1}(x)-0.0384615\pi_{2}(x)\\
+  p_4(f;x) &= 0.0384615+0.0397878\pi_{1}(x)+0.061008\pi_{2}(x)-0.0265252\pi_{3}(x)+0.00530504\pi_{4}(x)\\
+  p_6(f;x) &= 0.0384615+0.0264644\pi_{1}(x)+0.0248454\pi_{2}(x)+0.0149446\pi_{3}(x)-0.0131699\pi_{4}(x)\\
+           &  +0.00420316\pi_{5}(x)-0.000840633\pi_{6}(x)\\
+  p_8(f;x) &= 0.0384615+0.0223428\pi_{1}(x)+0.013956\pi_{2}(x)+0.0117043\pi_{3}(x)+0.000674338\pi_{4}(x)\\
+           &  -0.00489646\pi_{5}(x)+0.00243964\pi_{6}(x)-0.000687223\pi_{7}(x)+0.000137445\pi_{8}(x)
 \end{align*}
 
 The following figure shows the images of the interpolating polynomials and the original function.
@@ -306,10 +306,10 @@ Now we can answer the problems:
 
 Here are the interpolating results.
 \begin{align*}
-  p_\text{sp1}(x) =& 6.67+1.77167\pi_{0}(x)+0.457833\pi_{1}(x)-0.124778\pi_{2}(x)+0.013566\pi_{3}(x)\\
-                   & -0.000978085\pi_{4}(x)+4.1477\times 10^{-5}\pi_{5}(x)\\
-  p_\text{sp2}(x) =& 6.67+1.57167\pi_{0}(x)-0.0871667\pi_{1}(x)-0.0152729\pi_{2}(x)+0.00257908\pi_{3}(x)\\
-                   & -0.000204804\pi_{4}(x)+8.6768\times 10^{-6}\pi_{5}(x)
+  p_\text{sp1}(x) =& 6.67+1.77167\pi_{1}(x)+0.457833\pi_{2}(x)-0.124778\pi_{3}(x)+0.013566\pi_{4}(x)\\
+                   & -0.000978085\pi_{5}(x)+4.1477\times 10^{-5}\pi_{6}(x)\\
+  p_\text{sp2}(x) =& 6.67+1.57167\pi_{1}(x)-0.0871667\pi_{2}(x)-0.0152729\pi_{3}(x)+0.00257908\pi_{4}(x)\\
+                   & -0.000204804\pi_{5}(x)+8.6768\times 10^{-6}\pi_{6}(x)
 \end{align*}
 
 The images see the following figure.
