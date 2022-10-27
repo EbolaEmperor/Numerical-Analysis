@@ -6,26 +6,26 @@
 #include <string>
 #include <sstream>
 
-class Polynomial{
+template<class T> class T_Polynomial{
 private:
     static int outputMode;
 
 protected:
-    std::vector<double> coef;
+    std::vector<T> coef;
     int n;
 
 public:
-    Polynomial(){n = 0;}
-    Polynomial(const double &x){
+    T_Polynomial(){n = 0;}
+    T_Polynomial(const T &x){
         n = 0;
         coef.push_back(x);
     }
-    Polynomial(const double &x0, const double &x1){
+    T_Polynomial(const T &x0, const T &x1){
         n = 1;
         coef.push_back(x0);
         coef.push_back(x1);
     }
-    Polynomial(const Polynomial & p):
+    T_Polynomial(const T_Polynomial & p):
         coef(p.coef), n(p.n) {}
 
     // 设置了一些输出格式，默认为适合Latex公式显示的格式，也支持Tikz可识别的格式
@@ -35,23 +35,27 @@ public:
     static void setOutput(const int & style){
         if(style == OUTPUT_LATEX){
             outputMode = OUTPUT_LATEX;
-            std::cerr << "[Polynomial output mode : Latex]" << std::endl;
+            std::cerr << "[T_Polynomial output mode : Latex]" << std::endl;
         }
         else if(style == OUTPUT_TIKZ){
             outputMode = OUTPUT_TIKZ;
-            std::cerr << "[Polynomial output mode : Tikz]" << std::endl;
+            std::cerr << "[T_Polynomial output mode : Tikz]" << std::endl;
         }
         else{
-            std::cerr << "[Error] Incorrect Polynomial output mode setting !!!" << std::endl;
+            std::cerr << "[Error] Incorrect T_Polynomial output mode setting !!!" << std::endl;
             exit(-1);
         }
     }
 
-    friend std::ostream & operator << (std::ostream & out, const Polynomial & ni){
+    friend std::ostream & operator << (std::ostream & out, const T_Polynomial & ni){
         std::stringstream curs;
+        bool first = true;
         for(int i = 0; i <= ni.n; i++){
-            out << ni.coef[i] << curs.str();
-            if(i < ni.n && ni.coef[i+1] >= 0) out << "+";
+            if(ni.coef[i] != 0){
+                if(!first && ni.coef[i] >= 0) out << "+";
+                out << ni.coef[i] << curs.str();
+                if(first) first = false;
+            }
             if(outputMode == OUTPUT_TIKZ)
                 curs << "*\\x";
             else if(outputMode == OUTPUT_LATEX){
@@ -64,8 +68,8 @@ public:
         return out;
     }
 
-    double operator () (const double &vx) const{
-        double prod = 1, ans = 0;
+    T operator () (const T &vx) const{
+        T prod = 1, ans = 0;
         for(int i = 0; i <= n; i++){
             ans += coef[i] * prod;
             prod *= vx;
@@ -73,8 +77,8 @@ public:
         return ans;
     }
 
-    Polynomial operator + (const Polynomial &rhs){
-        Polynomial res(*this);
+    T_Polynomial operator + (const T_Polynomial &rhs){
+        T_Polynomial res(*this);
         res.n = std::max(res.n, rhs.n);
         res.coef.resize(res.n + 1);
         for(int i = 0; i <= rhs.n; i++)
@@ -82,8 +86,8 @@ public:
         return res;
     }
 
-    Polynomial operator * (const double &rhs){
-        Polynomial res;
+    T_Polynomial operator * (const T &rhs){
+        T_Polynomial res;
         res.n = n;
         res.coef.resize(res.n + 1);
         for(int i = 0; i <= n; i++)
@@ -91,8 +95,8 @@ public:
         return res;
     }
 
-    Polynomial operator * (const Polynomial &rhs){
-        Polynomial res;
+    T_Polynomial operator * (const T_Polynomial &rhs){
+        T_Polynomial res;
         res.n = n + rhs.n;
         res.coef.resize(res.n + 1);
         for(int i = 0; i <= n; i++)
@@ -101,8 +105,8 @@ public:
         return res;
     }
 
-    Polynomial diff(){
-        Polynomial res;
+    T_Polynomial diff(){
+        T_Polynomial res;
         res.n = n ? n - 1 : 0;
         for(int i = 1; i <= n; i++)
             res.coef.push_back(coef[i] * i);
@@ -110,22 +114,22 @@ public:
     }
 };
 
-int Polynomial::outputMode = 0;
+template<class T> int T_Polynomial<T>::outputMode = 0;
 
-class NewtonPolynomial{
+template<class T> class T_NewtonPolynomial{
 private:
     static int outputMode;
 
 protected:
-    std::vector<double> x;
-    std::vector<double> coef;
+    std::vector<T> x;
+    std::vector<T> coef;
     int n;
 
 public:
-    NewtonPolynomial(){n = 0;}
-    NewtonPolynomial(const NewtonPolynomial & p):
+    T_NewtonPolynomial(){n = 0;}
+    T_NewtonPolynomial(const T_NewtonPolynomial & p):
         x(p.x), coef(p.coef), n(p.n) {}
-    ~NewtonPolynomial(){
+    ~T_NewtonPolynomial(){
         x.clear();
         coef.clear();
     }
@@ -138,23 +142,23 @@ public:
     static void setOutput(const int & style){
         if(style == OUTPUT_NORMAL){
             outputMode = OUTPUT_NORMAL;
-            std::cerr << "[Newton polynomial output mode : Normal]" << std::endl;
+            std::cerr << "[Newton T_Polynomial output mode : Normal]" << std::endl;
         }
         else if(style == OUTPUT_LATEX){
             outputMode = OUTPUT_LATEX;
-            std::cerr << "[Newton polynomial output mode : Latex]" << std::endl;
+            std::cerr << "[Newton T_Polynomial output mode : Latex]" << std::endl;
         }
         else if(style == OUTPUT_TIKZ){
             outputMode = OUTPUT_TIKZ;
-            std::cerr << "[Newton polynomial output mode : Tikz]" << std::endl;
+            std::cerr << "[Newton T_Polynomial output mode : Tikz]" << std::endl;
         }
         else{
-            std::cerr << "[Error] Incorrect Newton polynomial output mode setting !!!" << std::endl;
+            std::cerr << "[Error] Incorrect Newton T_Polynomial output mode setting !!!" << std::endl;
             exit(-1);
         }
     }
 
-    friend std::ostream & operator << (std::ostream & out, const NewtonPolynomial & ni){
+    friend std::ostream & operator << (std::ostream & out, const T_NewtonPolynomial & ni){
         std::stringstream curs;
         for(int i = 0; i <= ni.n; i++){
             out << ni.coef[i] << curs.str();
@@ -178,14 +182,14 @@ public:
             else if(outputMode == OUTPUT_LATEX){
                 curs.str("");
                 curs.clear();
-                curs << "\\pi_{" << i << "}(x)";
+                curs << "\\pi_{" << i+1 << "}(x)";
             }
         }
         return out;
     }
 
-    double operator () (const double &vx) const{
-        double prod = 1, ans = 0;
+    T operator () (const T &vx) const{
+        T prod = 1, ans = 0;
         for(int i = 0; i <= n; i++){
             ans += coef[i] * prod;
             prod *= vx - x[i];
@@ -193,10 +197,10 @@ public:
         return ans;
     }
 
-    Polynomial standardize(){
-        Polynomial res(coef[0]), prod(1.0);
+    T_Polynomial<T> standardize(){
+        T_Polynomial<T> res(coef[0]), prod(1);
         for(int i = 1; i <= n; i++){
-            Polynomial tmp(-x[i-1], 1.0);
+            T_Polynomial<T> tmp(-x[i-1], 1);
             prod = prod * tmp;
             res = res + prod * coef[i];
         }
@@ -204,38 +208,42 @@ public:
     }
 };
 
-int NewtonPolynomial::outputMode = 0;
+template<class T> int T_NewtonPolynomial<T>::outputMode = 0;
 
-class HermiteInterpolation : public NewtonPolynomial{
+template<class T> class T_HermiteInterpolation : public T_NewtonPolynomial<T>{
 private:
-    std::vector<double> diffTable;
+    std::vector<T> diffTable;
+    using T_NewtonPolynomial<T>::n;
+    using T_NewtonPolynomial<T>::x;
+    using T_NewtonPolynomial<T>::coef;
+    // 非模板类不需要上述using，但是在模板类的继承机制下，不加上面三句using会编译失败
 
 public:
-    HermiteInterpolation(const HermiteInterpolation & rhs):
-        NewtonPolynomial(rhs), diffTable(rhs.diffTable) {}
-    ~HermiteInterpolation(){
+    T_HermiteInterpolation(const T_HermiteInterpolation & rhs):
+        T_NewtonPolynomial<T>(rhs), diffTable(rhs.diffTable) {}
+    ~T_HermiteInterpolation(){
         diffTable.clear();
     }
 
     // 添加插值点，若同一个插值点newx被连续添加多次，则第k个对应的newf值，会被视为newx处的(k-1)阶导数值
-    void addPoint(const double &newx, const double &newf){
+    void addPoint(const T &newx, const T &newf){
         n++;
-        static double fac = 1.0;
+        static T fac = 1;
         static int k = 0;
         if(!x.empty() && newx == x.back()){
             fac *= (++k);
         } else {
-            fac = 1.0;
+            fac = 1;
             k = 0;
         }
         x.push_back(newx);
-        double newv = newf / fac;
+        T newv = newf / fac;
         for(int j = 1 + k; j <= n; j++){
             if(x[n] == x[n-j]){
                 std::cerr << "[Error] The interpolating point " << x[n] << " appears in a wrong position!" << std::endl;
                 exit(-1);
             }
-            double tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
+            T tmp = (newv - diffTable[j-1]) / (x[n] - x[n-j]);
             diffTable[j-1] = newv;
             newv = tmp;
         }
@@ -243,7 +251,7 @@ public:
         coef.push_back(newv);
     }
 
-    HermiteInterpolation(const std::vector<double> & _x, const std::vector<double> & _f){ 
+    T_HermiteInterpolation(const std::vector<T> & _x, const std::vector<T> & _f){ 
         n = -1;
         if(_x.size() != _f.size()){
             std::cerr << "[Error] The size of interpolating points and interpolating values must coincide !!!" << std::endl;
@@ -258,6 +266,9 @@ public:
     }
 };
 
+typedef T_Polynomial<double> Polynomial;
+typedef T_NewtonPolynomial<double> NewtonPolynomial;
+typedef T_HermiteInterpolation<double> HermiteInterpolation;
 typedef HermiteInterpolation NewtonInterpolation;
 
 #endif
