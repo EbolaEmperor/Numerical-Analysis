@@ -1024,4 +1024,220 @@ The results are shown as the following table.
   \end{enumerate}
 \end{solution}
 
+\chapter{Computer Arithmetic}
+
+\begin{problem}
+  Convert the decimal integer $477$ to a normalized FPN with $\beta=2$.
+\end{problem}
+
+\begin{solution}
+  $477=(111011101)_2=(1.11011101)_2\times 2^8.$
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  Convert the decimal fraction $\frac{3}{5}$ to a normalized FPN with $\beta=2$.
+\end{problem}
+
+\begin{solution}
+  Calculate by the following table.
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+    Arithmetic                        & Decimal Part  & Integer Part \\ \hline
+    $\frac{3}{5}\times 2=\frac{6}{5}$ & $\frac{1}{5}$ & $1$          \\
+    $\frac{1}{5}\times 2=\frac{2}{5}$ & $\frac{2}{5}$ & $0$          \\
+    $\frac{2}{5}\times 2=\frac{4}{5}$ & $\frac{4}{5}$ & $0$          \\
+    $\frac{4}{5}\times 2=\frac{8}{5}$ & $\frac{3}{5}$ & $1$          \\
+    $\vdots$                          & $\vdots$      & $\vdots$    
+    \end{tabular}
+  \end{table}
+
+  Hence we got that
+  \begin{equation*}
+    \frac{3}{5}=(1.0011001\cdots)_2\times 2^{-1}
+  \end{equation*}
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  Let $x=\beta^e,\;e\in\mathbb{Z},\;L<e<U$ be a normalized FPN in $\mathbb{F}$ and $x_L,x_R\in \mathbb{F}$ the two normalized FPNs adjacent to $x$ such that $x_L<x<x_R$. Prove $x_R-x=\beta(x-x_L)$.
+\end{problem}
+
+\begin{solution}
+  We represent $x,x_L,x_R$ in the form of normalized FPN as following.
+  \begin{align*}
+    x&=(1.00\cdots 0)_\beta \times \beta^{e}\\
+    x_L&=([\beta-1].[\beta-1]\cdots [\beta-1])_\beta \times \beta^{e-1}\\
+    x_R&=(1.00\cdots 01)_\beta \times \beta^{e}
+  \end{align*}
+
+  And hence we have:
+  \begin{align*}
+    x_R-x&=(0.00\cdots 01)_\beta\times \beta^{e}=\beta^{e-p+1}\\
+    x-x_L&=(0.00\cdots 01)_\beta\times \beta^{e-1}=\beta^{e-p}
+  \end{align*}
+
+  That is $x_R-x=\beta(x-x_L)$.
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  By reusing your result of II, find out the two normalized FPNs adjacent to $x=\frac{3}{5}$ under the IEEE 754 single-precision protocol. What is $\text{fl}(x)$ and the relative roundoff error?
+\end{problem}
+
+\begin{solution}
+  Recall that $x=(1.0011001\cdots)_2\times 2^{-1}$, find $x_L$ and $x_R$ under IEEE 754 single-precision protocol:
+  \begin{align*}
+    x_L &= (1.0011001\;10011001\;1001100)_2\times 2^{-1},\\
+    x_R &= (1.0011001\;10011001\;1001101)_2\times 2^{-1}.
+  \end{align*}
+
+  We calculate that:
+  \begin{align*}
+    x-x_L &= (1.10011001\cdots)_2\times 2^{-23}=\frac{8}{5} \times 2^{-23},\\
+    x_R-x_L &= 2^{-22},\\
+    x_R-x&=(x_R-x_L)-(x-x_L)=2^{-22}-\frac{8}{5} \times 2^{-23}=\frac{2}{5}\times 2^{-23}.
+  \end{align*}
+
+  Clearly that $x_R-x<x-x_L$, hence $\text{fl}(x)=x_R$ and the relative roundoff error is $\frac{|x_R-x|}{|x|}=\frac{2}{3}\times 2^{-23}$.
+\end{solution}
+
+\begin{problem}
+  If the IEEE 754 single-precision protocol did not round off numbers to the nearest, but simply dropped excess bits, what would the unit roundoff be?
+\end{problem}
+
+\begin{solution}
+  It would be $\epsilon_u^*=\epsilon_M=\beta^{1-p}$.
+  
+  To prove it, we should prove that for $x\in\mathcal{R(F)}$, we have
+  \begin{equation}
+    \text{fl}^*(x)=x(1+\delta), \qquad |\delta|<\epsilon_u^*
+  \end{equation}
+
+  where $\text{fl}^*(x)$ is the approximate of $x$ got by the discription of the problem.
+
+  we could find $x_L,x_R\in\mathcal{F}$ s.t.
+
+  \begin{itemize}
+    \item $x_L$ and $x_R$ are adjacent.
+    \item $x_L\leq x\leq x_R$.
+  \end{itemize}
+
+  If $x=x_L$ or $x=x_R$, then $\text{fl}^*(x)-x=0$ and (4.1) clearly holdes. Otherwise $x_L<x<x_R$. Then Lemma 4.23, Definition 4.22 yield
+  \begin{equation*}
+    |\text{fl}^*(x)-x|\leq |x_R-x_L|\leq \epsilon_u^*\min(|x_L|,|x_R|)< \epsilon_u^*|x|.
+  \end{equation*}
+
+  which yields (4.1). And the upper bound of the error can be reached as $x\to x_{R-}$. Hence $\epsilon_u^*$ is the unit roundoff.
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  How many bits of precision are lost in the subtraction $1-\cos x$ when $x=\frac{1}{4}$?
+\end{problem}
+
+\begin{solution}
+  For $x=\frac{1}{4}$, we know that $1>\cos x$, hence by the theorem on the loss of most significant digits, we should calculate:
+  \begin{equation*}
+    1-\frac{\cos x}{1}=0.0310875783\cdots \in [2^{-6},2^{-5}].
+  \end{equation*}
+  
+  (The result above is calculated with \verb|long double|, which is accurate enough.)
+
+  Hence we lost at most $6$ and at least $5$ significant bits.
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  Suggest at least two ways to compute $1-\cos x$ to avoid caatastrophic cancellation caused by subtraction.
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}[(1)]
+    \item We can use Taylor series:
+    \begin{align*}
+      1-\cos x&=1-\left(1-\frac{x^2}{2!}+\frac{x^4}{4!}-\frac{x^6}{6!}+\cdots\right)\\
+      &=\frac{x^2}{2!}-\frac{x^4}{4!}+\frac{x^6}{6!}-\cdots.
+    \end{align*}
+
+    \item We can use sum-to-product identities:
+    \begin{align*}
+      1-\cos x= \cos 0- \cos x= 2\sin^2\left(\frac{x}{2}\right).
+    \end{align*}
+  \end{enumerate}
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  What are the condition numbers of the following functions? Where are they large?
+  \begin{itemize}
+    \item $f_1(x)=(x-1)^\alpha$,
+    \item $f_2(x)=\ln x$,
+    \item $f_3(x)=e^x$,
+    \item $f_4(x)=\arccos x$.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{itemize}
+    \item We should discuss the value of $\alpha$.
+    \begin{enumerate}[(i)]
+      \item $\alpha\neq 0$. The condition number of $f_1$ is
+      \begin{equation*}
+        C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{\alpha x(x-1)^{\alpha-1}}{(x-1)^\alpha}\right|=\left|\frac{\alpha x}{x-1}\right|.
+      \end{equation*}
+      Hence $C_{f_1}(x)\to +\infty$ as $x\to 1$.
+      \item $\alpha=0$. The condition number of $f_1$ is
+      \begin{equation*}
+        C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{0}{1}\right|=0.
+      \end{equation*}
+      Hence $C_{f_1}(x)$ will never be large.
+    \end{enumerate}
+    \item The condition number of $f_2$ is
+    \begin{equation*}
+      C_{f_2}(x)=\left|\frac{xf'_2(x)}{f_2(x)}\right|=\left|\frac{x \cdot \frac{1}{x}}{\ln x}\right|=\left| \frac{1}{\ln x} \right|.
+    \end{equation*}
+    Hence $C_{f_2}(x)\to +\infty$ as $x\to 0_+$.
+    \item The condition number of $f_3$ is
+    \begin{equation*}
+      C_{f_3}(x)=\left|\frac{xf'_3(x)}{f_3(x)}\right|=\left|\frac{x e^x}{e^x}\right|=\left|x \right|.
+    \end{equation*}
+    Hence $C_{f_3}(x)\to +\infty$ as $x\to \pm \infty$.
+    \item The condition number of $f_4$ is
+    \begin{equation*}
+      C_{f_4}(x)=\left|\frac{xf'_4(x)}{f_4(x)}\right|=\left| \frac{x}{\sqrt{1-x^2}\arccos x} \right|
+    \end{equation*}
+    Hence $C_{f_4}(x)\to +\infty$ as $x\to \pm 1$.
+  \end{itemize}
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  Consider the function $f(x)=1-e^{-x}$ for $x\in[0,1]$.
+  \begin{itemize}
+    \item Show that $C_f(x)\leq 1$ for $x\in[0,1]$.
+    \item Let $A$ be the algorithm that evaluates $f(x)$ for the machine number $x\in\mathbb{F}$. Assume that the exponential function is computed with relative error within machine roundoff. Estimate $\text{cond}_A(x)$ for $x\in[0,1]$.
+    \item Plot $\text{cond}_f(x)$ and the estimated upper bound of $\text{cond}_A(x)$ as a function of $x$ on $[0,1]$. Discuss your results.
+  \end{itemize}
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}[(1)]
+    \item The condition number of $f$ is
+    \begin{equation*}
+      C_f(x)=\left|\frac{xe^{-x}}{1-e^{-x}}\right|.
+    \end{equation*}
+    Notice that $C_f(x)$ decreases in $x\in[0,1]$, and $\lim\limits_{x\to 0} C_f(x)=1$. Hence $C_f(x)\leq 1$ for $x\in[0,1]$.
+    \item 
+  \end{enumerate}
+\end{solution}
+
 \end{document}
