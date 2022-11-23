@@ -20,6 +20,8 @@
 \tikzset{eaxis/.style={->,>=stealth}}
 
 \usepackage{float}
+\usepackage{pgfplots}
+\usepackage{tikz}
 
 \begin{document}
 
@@ -1111,7 +1113,7 @@ The results are shown as the following table.
 \end{problem}
 
 \begin{solution}
-  It would be $\epsilon_u^*=\epsilon_M=\beta^{1-p}$.
+  It would be $\epsilon_u^*=\epsilon_M=\beta^{1-p}=2^{-23}$.
   
   To prove it, we should prove that for $x\in\mathcal{R(F)}$, we have
   \begin{equation}
@@ -1155,7 +1157,7 @@ The results are shown as the following table.
 \vspace{1em}
 
 \begin{problem}
-  Suggest at least two ways to compute $1-\cos x$ to avoid caatastrophic cancellation caused by subtraction.
+  Suggest at least two ways to compute $1-\cos x$ to avoid catastrophic cancellation caused by subtraction.
 \end{problem}
 
 \begin{solution}
@@ -1189,31 +1191,21 @@ The results are shown as the following table.
   \begin{itemize}
     \item We should discuss the value of $\alpha$.
     \begin{enumerate}[(i)]
-      \item $\alpha\neq 0$. The condition number of $f_1$ is
-      \begin{equation*}
-        C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{\alpha x(x-1)^{\alpha-1}}{(x-1)^\alpha}\right|=\left|\frac{\alpha x}{x-1}\right|.
-      \end{equation*}
+      \item $\alpha\neq 0$. The condition number of $f_1$ is $C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{\alpha x(x-1)^{\alpha-1}}{(x-1)^\alpha}\right|=\left|\frac{\alpha x}{x-1}\right|.$
+
       Hence $C_{f_1}(x)\to +\infty$ as $x\to 1$.
-      \item $\alpha=0$. The condition number of $f_1$ is
-      \begin{equation*}
-        C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{0}{1}\right|=0.
-      \end{equation*}
+      \item $\alpha=0$. The condition number of $f_1$ is $C_{f_1}(x)=\left|\frac{xf'_1(x)}{f_1(x)}\right|=\left|\frac{0}{1}\right|=0.$
+
       Hence $C_{f_1}(x)$ will never be large.
     \end{enumerate}
-    \item The condition number of $f_2$ is
-    \begin{equation*}
-      C_{f_2}(x)=\left|\frac{xf'_2(x)}{f_2(x)}\right|=\left|\frac{x \cdot \frac{1}{x}}{\ln x}\right|=\left| \frac{1}{\ln x} \right|.
-    \end{equation*}
+    \item The condition number of $f_2$ is $C_{f_2}(x)=\left|\frac{xf'_2(x)}{f_2(x)}\right|=\left|\frac{x \cdot \frac{1}{x}}{\ln x}\right|=\left| \frac{1}{\ln x} \right|.$
+    
     Hence $C_{f_2}(x)\to +\infty$ as $x\to 0_+$.
-    \item The condition number of $f_3$ is
-    \begin{equation*}
-      C_{f_3}(x)=\left|\frac{xf'_3(x)}{f_3(x)}\right|=\left|\frac{x e^x}{e^x}\right|=\left|x \right|.
-    \end{equation*}
+    \item The condition number of $f_3$ is $C_{f_3}(x)=\left|\frac{xf'_3(x)}{f_3(x)}\right|=\left|\frac{x e^x}{e^x}\right|=\left|x \right|.$
+
     Hence $C_{f_3}(x)\to +\infty$ as $x\to \pm \infty$.
-    \item The condition number of $f_4$ is
-    \begin{equation*}
-      C_{f_4}(x)=\left|\frac{xf'_4(x)}{f_4(x)}\right|=\left| \frac{x}{\sqrt{1-x^2}\arccos x} \right|
-    \end{equation*}
+    \item The condition number of $f_4$ is $C_{f_4}(x)=\left|\frac{xf'_4(x)}{f_4(x)}\right|=\left| \frac{x}{\sqrt{1-x^2}\arccos x} \right|$
+
     Hence $C_{f_4}(x)\to +\infty$ as $x\to \pm 1$.
   \end{itemize}
 \end{solution}
@@ -1231,13 +1223,152 @@ The results are shown as the following table.
 
 \begin{solution}
   \begin{enumerate}[(1)]
-    \item The condition number of $f$ is
-    \begin{equation*}
-      C_f(x)=\left|\frac{xe^{-x}}{1-e^{-x}}\right|.
-    \end{equation*}
+    \item The condition number of $f$ is $C_f(x)=\left|\frac{xe^{-x}}{1-e^{-x}}\right|=\left|\frac{x}{e^x-1}\right|.$
+
     Notice that $C_f(x)$ decreases in $x\in[0,1]$, and $\lim\limits_{x\to 0} C_f(x)=1$. Hence $C_f(x)\leq 1$ for $x\in[0,1]$.
-    \item 
+    \item See that
+    \begin{equation*}
+      \epsilon_u > |f_A(x)-f(x)|=|f(x_A)-f(x)|=|f'(\xi)|\cdot|x-x_A|,\quad \text{for} \;\xi \; \text{between} \; x \; \text{and} \; x_A.
+    \end{equation*}
+    So we have
+    \begin{equation*}
+      |x-x_A|< \frac{\epsilon_u}{|f'(\xi)|}=\frac{\epsilon_u}{e^{-\xi}}\leq e\epsilon_u.
+    \end{equation*}
+    Hence by the definition, 
+    \begin{equation*}
+      \text{cond}_A(x)=\frac{1}{\epsilon_u}\min_{\{x_A\}}\frac{|x-x_A|}{x}< \frac{e}{x}.
+    \end{equation*}
+    \item See the figure of $C_f(x)$ and the upper bound of $\text{cond}_A(x)$ here.
+    \tikzset{global scale/.style={
+      scale=#1,
+      every node/.append style={scale=#1}
+      }
+    }
+    \begin{center}
+      \begin{tikzpicture}[global scale = 0.8]
+        \begin{axis}[
+            axis lines=middle,
+            samples=51,
+      %       grid,                
+      %      thick,
+            domain=0.2:1,
+            legend pos=outer north east,
+            smooth,
+        ]
+        \addplot+[no marks]{\x/(e^\x-1)};
+        \addplot+[no marks]{e/\x};
+        \addlegendentry{$\text{cond}_f(x)$}
+        \addlegendentry{upper bound of $\text{cond}_A(x)$}
+        \end{axis}
+      \end{tikzpicture}
+    \end{center}
+
+    The upper bound of $\text{cond}_A(x)$ goes large as $x\to 0_+$, which means calculating $f$ with algorithm $A$ as $x$ is small will cause catastrophic cancellation.
   \end{enumerate}
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  The math problem of root finding for a polynomial
+  \begin{equation}
+    q(x)=\sum_{i=0}^n a_ix^i, \quad a_n=1,a_0\neq 0,a_i\in \mathbb{R}
+  \end{equation}
+  can be considered as a vector function $f:\mathbb{R}^n \to \mathbb{C}$:
+  \begin{equation*}
+    r=f(a_0,a_1,...,a_{n-1}).
+  \end{equation*}
+
+  Derive the componentwise condition number of $f$ base on the 1-norm. For the Wilkinson example, conpute your condition number, and compare your result with that in the Wilkinson Example. What does the comparision tell you?
+\end{problem}
+
+\begin{solution}
+  Notice that $r$ satisfies equation
+  \begin{equation*}
+    \sum_{i=0}^n a_ir^i = 0.
+  \end{equation*}
+  
+  Compute partial differetial to each side, we have
+  \begin{equation*}
+    r^j + \sum_{i=0}^n ia_ir^{i-1}\frac{\partial r}{\partial a_j} = 0, \qquad j=1,2,...,n-1.
+  \end{equation*}
+
+  That implies 
+  \begin{equation*}
+    \nabla r = -\frac{(1, r, ..., r^{n-1})}{q'(r)}.
+  \end{equation*}
+
+  Hence we have
+  \begin{equation*}
+    \text{cond}_f(\mathbf{a})=\frac{||\mathbf{a}||_1\;||\nabla r||_1}{|r|}=\frac{\sum_{i=1}^{n-1} |a_i|\cdot\sum_{i=0}^{n-1} |r|^i}{\left|\sum_{i=0}^n ia_ir^i\right|} \left(\geq \frac{\sum_{i=1}^{n-1} |a_ir^i|}{\left|\sum_{i=0}^n ia_ir^i\right|}\right)
+  \end{equation*}
+
+  In Wilkinson example, $q(x)=\prod_{i=1}^n (x-i)$, $r=n$ is a root. Then we have
+  \begin{equation*}
+    \sum_{i=0}^{n-1}|a_nr^i| \geq -\sum_{i=0}^{n-1} a_ir^i = r^n = n^n,
+  \end{equation*}
+  and
+  \begin{equation*}
+    \left|\sum_{i=0}^n ia_ir^i\right| = |r| \cdot |q'(r)| = n|q'(n)| < n^2 n!.
+  \end{equation*}
+
+  Hence we have $\text{cond}_f(\mathbf{a})\geq \frac{n^{n-2}}{n!}$, which goes $+\infty$ as $n\to \infty$. It supports the Wilkinson Example. And it tells us that finding the root of high-order polynomial equation is very hard.
+\end{solution}
+
+\vspace{1em}
+
+\begin{problem}
+  Suppose the division of two FPNs is calculated in a register of precision $2p$. Give an example that contradicts the conclusion of the model of machine arithmetic.
+\end{problem}
+
+\begin{solution}
+  Consider the FPN system: $\beta=2, p=2, L=-1, U=1$. The number:
+  \begin{equation*}
+    a=(1.0)_2\times 2^{0},\quad b=(1.1)_2\times 2^{0}.
+  \end{equation*}
+
+  We have the theoretical result:
+  \begin{equation*}
+    \frac{a}{b}=\frac{2}{3}=(0.101010\cdots)_2.
+  \end{equation*}
+
+  If calculating in a register with precision $2p=4$, then:
+  \begin{equation*}
+    \text{fl}\left(\frac{a}{b}\right)=\text{fl}((0.101)_2)=(0.10)_2\times 2^{0}=0.5
+  \end{equation*}
+
+  The relative error is
+  \begin{equation*}
+    \left|\frac{0.5}{\frac{2}{3}}-1\right|=0.25
+  \end{equation*}
+
+  And the machine precision is
+  \begin{equation*}
+    \epsilon_u=2^{-2}=0.25
+  \end{equation*}
+
+  So the result contradicts to the model of machine arithmetic.
+
+\end{solution}
+
+\begin{problem}
+  If the bisection method is used in single precision FPNs of IEEE 754 starting with the interval $[128,129]$, can we compute the root with absolute accuracy $<10^{-6}$? Why?
+\end{problem}
+
+\begin{solution}
+  In this system, $\epsilon_M=2^{-23}$. Hence the distance of two adjacent floating numbers in $[128,129]$ is
+  \begin{equation*}
+    2^7\epsilon_M=2^{-16}\approx 1.5259\times 10^{-5}>2\times 10^{-6}.
+  \end{equation*}
+
+  Hence we can't compute the root with absolute accuracy less than $10^{-6}$.
+\end{solution}
+
+\begin{problem}
+  In fitting a curve by cubic splines, one gets inaccurate results when the distance between two adjacent points is much smaller than those of other adjacent pairs. Use the condition number of a matrix to explain this phenomenon.
+\end{problem}
+
+\begin{solution}
 \end{solution}
 
 \end{document}
