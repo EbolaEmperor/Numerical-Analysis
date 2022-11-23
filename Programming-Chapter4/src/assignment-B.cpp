@@ -26,6 +26,7 @@ int main(){
 
     cout << "Question #4" << endl;
     x.turn_UFL(); x.turn_neg();
+    x.turn_next_ext();
     while(!x.isUFL()){
         card++;
         cout << x.to_double() << " ";
