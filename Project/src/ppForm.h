@@ -6,7 +6,7 @@
 #include <cstring>
 #include <cmath>
 #include <limits>
-#include "polynimial.h"
+#include "polynomial.h"
 #include "matrix.h"
 
 const double _epsL = 10 * std::numeric_limits<double>::epsilon();
