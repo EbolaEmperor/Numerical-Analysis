@@ -8,22 +8,7 @@
 #include <limits>
 #include "polynomial.h"
 #include "matrix.h"
-
-const double _epsL = 10 * std::numeric_limits<double>::epsilon();
-
-// 函数虚类，实体函数需要继承此类，并定义()运算，子类可以定义diff为导函数，若不定义，则diff默认采用差商代替导数的方法
-class Function{
-public:
-    virtual double operator () (const double &x) const = 0;
-
-    virtual double diff (const double &x) const{
-        return ((*this)(x+_epsL)-(*this)(x-_epsL)) / (2*_epsL);
-    }
-
-    virtual double diff2 (const double &x) const{
-        return ((*this)(x+2*_epsL)+(*this)(x-2*_epsL)-2*(*this)(x)) / (4*_epsL*_epsL);
-    }
-};
+#include "Function.h"
 
 class ppForm_base{
 protected:
@@ -149,7 +134,6 @@ public:
             }
             b[4*n-2] = b[4*n-1] = 0;
         }
-        //std::cerr << A << std::endl << b.T() << std::endl;
         ColVector coef = solve(A, b);
         std::vector<double> pcoef(4);
         for(int i = 0; i < n; i++){
@@ -180,6 +164,16 @@ public:
 
     ppForm_cubic(const std::vector<double> &x, Function &f):
         ppForm_cubic(x, f, "natural") {}
+
+    ppForm_cubic(const int &n, const double &l, const double &r, Function & func, const std::string &bondary){
+        vector<double> t(n);
+        for(int i = 0; i < n; i++)
+            t[i] = l + (r-l)*i/(n-1);
+        (*this) = ppForm_cubic(t, func, bondary);
+    }
+
+    ppForm_cubic(const int &n, const double &l, const double &r, Function & func):
+        ppForm_cubic(n, l, r, func, "natural") {}
 };
 
 #endif
