@@ -25,7 +25,9 @@
   \item \verb|class ppForm_cubic|: 三阶多项式样条插值类，继承\verb|ppForm_base|。
   \item \verb|class BSpline_base|: B样条插值基类。
   \item \verb|class BSpline_linear|: 线性B样条插值类，继承\verb|BSpline_base|。
+  \item \verb|class BSpline_quadradic|: 二阶B样条插值类，继承\verb|BSpline_base|。
   \item \verb|class BSpline_cubic|: 三阶B样条插值类，继承\verb|BSpline_base|。
+  \item \verb|class Curve|: 借助三阶B样条插值实现的曲线生成器。
 \end{itemize}
 
 此外，本项目还引用了作者上学期在《优化实用算法》中完成的矩阵库，包括类 \verb|Matrix| 及其派生类 \verb|ColVector|，\verb|RowVector|，封装了矩阵的一些常用运算。篇幅所限，在这篇设计文档中作者不介绍矩阵库的设计思路。
@@ -193,5 +195,25 @@ class BSpline_base{
 \end{lstlisting}
 
 最后，\verb|class BSpline_linear| 与 \verb|class BSpline_cubic| 提供的接口与对应的 ppForm 插值类完全一致，其设计思路不再赘述。
+
+\subsection{class Curve}
+
+给定平面上$n$个点$P_1,...,P_n$，生成一条曲线$\gamma$，使得$\gamma\left(\frac{i-1}{n-1}\right)=P_i\;(i=1,\cdots,n)$。
+
+类的私有成员存储点的数量$n$，以及横坐标与纵坐标的样条曲线$f_x(t),f_y(t)$。构造函数用两个 \verb|vector<double>| 给出点$P_1,...,P_n$的坐标，支持\textit{natural}与\textit{periodic}两种边界条件。支持求值运算（小括号运算）与输出流。原型如下。
+
+\begin{lstlisting}
+class Curve{
+  private:
+    int n;
+    BSpline_cubic fx, fy;
+  
+  public:
+    Curve();
+    Curve(const vector<double> &x, const vector<double> &y, const std::string & bondary);
+    Point operator () (const double &t);
+    friend std::ostream & operator << (std::ostream & out, const Curve &rhs);
+};
+\end{lstlisting}
 
 \end{document}

@@ -230,4 +230,151 @@ The end of periodic curve is smooth while others are sharp.
 
 \section{Programming Assignments}
 
+\subsection{Assignment A}
+
+Run
+
+\begin{lstlisting}
+    ./A N > A.txt
+\end{lstlisting}
+
+to get the numerical result, where $N$ are the number of knots. Copy the text and replace line 3-4 of \verb|draw_A.m|, then run the latter code with \textbf{matlab}. You will see the figures as following.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assA_N=6.eps}
+        \caption{$N=6$}
+        \label{fig:side:a}
+    \end{minipage}%
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assA_N=11.eps}
+        \caption{$N=11$}
+        \label{fig:side:b}
+    \end{minipage}
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assA_N=21.eps}
+        \caption{$N=21$}
+        \label{fig:side:c}
+    \end{minipage}%
+\end{figure}
+
+The max error sees the following table.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{c|cccccc}
+    \textbf{$N$} & 6        & 11        & 21         & 41          & 81        & 501         \\ \hline
+    max error    & 0.421696 & 0.0205293 & 0.00316894 & 0.000275356 & 1.609e-05 & 1.64707e-06
+    \end{tabular}
+\end{table}
+
+We can plot the logarithm of max error. And compare it with logarithm of $N^{-2}$ and $N^{-3}$. As the following figure shows.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figure/maxerr_log.eps}
+    \caption{logarithm of max error and $N^{-2}$, $N^{-3}$.}
+\end{figure}
+
+So the convergence rate may appoximate to be of order two.
+
+\subsection{Assignment C}
+
+Run
+
+\begin{lstlisting}
+    ./C > runge.txt
+\end{lstlisting}
+
+to get the numerical result in a text file. Copy the text and replace line 3-4 of \verb|draw_C.m|, then run the latter code with \textbf{matlab}. You will see the figure as following.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure/assC.eps}
+    \caption{The interpolating result of quadratic B-spline and cubic(complete) B-spline.}
+\end{figure}
+
+\subsection{Assignment D}
+
+Run \verb|./D| directly to see the result, as the following table shows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{c|ccccccc}
+    \textbf{point}            & -3.5        & -3         & -0.5      & 0        & 0.5         & 3          & 3.5         \\ \hline
+    $E_{S}(\text{quadratic})$ & 0           & 0.00141838 & 0         & 0.120238 & 1.11022e-16 & 0.00141838 & 0           \\
+    $E_{S}(\text{cubic})$     & 0.000505852 & 0          & 0.0205266 & 0        & 0.0205266   & 0          & 0.000505852
+    \end{tabular}
+\end{table}
+
+The points $-3.5, -0.5, 0.5, 3.5$ are knots of quadratic B-spline, hence the error are close to machine precision. So does $-3,0,3$ to cubic B-spline. We could see that the cubic B-spline is more accurate.
+
+\subsection{Assignment E}
+
+We use the following parametrization (not unit-speed).
+\begin{align*}
+    \gamma(\theta) = \left(\sqrt{3} \sin\theta,\;\; \frac{2}{3}\left(\sqrt{3}\sin\theta + \left(\sqrt{3}|\cos \theta|\right)^\frac{1}{2}\right) \right)
+\end{align*}
+where $\theta\in[-\frac{\pi}{2},\frac{3\pi}{2}]$. 
+
+We can numerically compute the length of curve between $\gamma(\theta_l)$ and $\gamma(\theta_r)$ with \textbf{divide-and-conquer strategy}. So we can use \textbf{bisection method} to find $\theta_0,\cdots,\theta_N$, such that the length of curve between $\gamma(\theta_i)$ and $\gamma(\theta_{i+1})$ are equal for $i=0,...,N-1$.
+
+Run
+\begin{lstlisting}
+    ./E natural 10 > E.txt
+\end{lstlisting}
+to get the numerical result of natural cubic B-Spline with $10$ vertexes. Also replace $10$ with $40, 160$ and replace \verb|natural| with \verb|periodic| to get other results. Copy the text to \verb|draw_E.m| to generate the figures as following.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_10knots.eps}
+        \caption{natural, 10 knots.}
+        \label{fig:side:a}
+    \end{minipage}%
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_40knots.eps}
+        \caption{natural 40 knots.}
+        \label{fig:side:b}
+    \end{minipage}
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_160knots.eps}
+        \caption{natural, 160 knots.}
+        \label{fig:side:c}
+    \end{minipage}%
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_10knots_periodic.eps}
+        \caption{periodic, 10 knots.}
+        \label{fig:side:a}
+    \end{minipage}%
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_40knots_periodic.eps}
+        \caption{periodic 40 knots.}
+        \label{fig:side:b}
+    \end{minipage}
+    \begin{minipage}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=0.95\linewidth]{figure/assE_160knots_periodic.eps}
+        \caption{periodic, 160 knots.}
+        \label{fig:side:c}
+    \end{minipage}%
+\end{figure}
+
+As we can see, fit the shape with 40 knots is enough.
+
+Morever, notice the end of the shape is sharp. But boundary \textit{periodic} always gives smooth end. So use boundary \textit{natural} is more appropriate.
+
 \end{document}

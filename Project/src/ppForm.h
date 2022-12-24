@@ -92,6 +92,11 @@ private:
 
 public:
     ppForm_cubic(const std::vector<double> &x, const std::vector<double> &f, const std::string &bondary){
+        for(int i = 0; i < x.size()-1; i++)
+            if(x[i] >= x[i+1]) error("ppForm_cubic :: the knots must be strictly increasing!");
+        if(f.size() < x.size())
+            error("ppForm_cubic :: Too small size of vector<double> f!");
+        
         n = x.size() - 1;
         Matrix A(4*n, 4*n);
         ColVector b(4*n);
@@ -103,6 +108,8 @@ public:
             }
             b[4*n-2] = b[4*n-1] = 0;
         } else if(bondary == "complete"){
+            if(f.size() < x.size()+2)
+                error("ppForm_cubic :: Cannot read derivatives at ends in vector<double> f!");
             for(int j = 1; j < 4; j++){
                 A[4*n-2][j] = j * pow(x[0], j-1);
                 A[4*n-1][4*(n-1)+j] = j * pow(x[n], j-1);
@@ -116,6 +123,8 @@ public:
             A[4*n-2][4*(n-1)+3] = -1;
             b[4*n-2] = b[4*n-1] = 0;
         } else if(bondary == "second-derivatives-at-end"){
+            if(f.size() < x.size()+2)
+                error("ppForm_cubic :: Cannot read second-derivatives at ends in vector<double> f!");
             for(int j = 2; j < 4; j++){
                 A[4*n-2][j] = j*(j-1) * pow(x[0], j-2);
                 A[4*n-1][4*(n-1)+j] = j*(j-1) * pow(x[n], j-2);
@@ -123,6 +132,8 @@ public:
             b[4*n-2] = f[n+1];
             b[4*n-1] = f[n+2];
         } else if(bondary == "periodic"){
+            if(f.front() != f.back())
+                error("ppForm_cubic :: The left value and right value are not the same in boundary 'periodic'!");
             for(int j = 1; j < 4; j++){
                 A[4*n-2][j] = j * pow(x[0], j-1);
                 A[4*n-2][4*(n-1)+j] = - j * pow(x[n], j-1);
