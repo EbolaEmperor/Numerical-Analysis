@@ -28,14 +28,10 @@ public:
         n(rhs.n), knots(rhs.knots), poly(rhs.poly) {}
     
     double operator () (const double &x) const{
-        if(n == 0){
-            std::cerr << "[Error] ppForm operator () :: Visited an uninitialized object." << std::endl;
-            exit(-1);
-        }
-        if(x < knots.front() || x > knots.back()){
-            std::cerr << "[Error] ppForm operator () :: point x are not in the interpolation interval." << std::endl;
-            exit(-1);
-        }
+        if(n == 0)
+            error("ppForm operator () :: Visited an uninitialized object.");
+        if(x < knots.front() || x > knots.back())
+            error("ppForm operator () :: point x are not in the interpolation interval.");
         for(int i = 0; i < n-1; i++){
             if(x <= knots[i+1]) return poly[i](x);
         }
@@ -46,17 +42,12 @@ public:
 class ppForm_linear : public ppForm_base{
 public:
     ppForm_linear(const std::vector<double> &x, const std::vector<double> &f){
-        if(x.size() != f.size() || x.size() < 2){
-            std::cerr << "[Error] ppForm_linear initializing :: The knots and values are incorrect." << std::endl;
-            exit(-1);
-        }
+        if(x.size() != f.size() || x.size() < 2)
+            error("[Error] ppForm_linear initializing :: The knots and values are incorrect.");
         n = x.size() - 1;
-        for(int i = 0; i < n; i++){
-            if(x[i] >= x[i+1]){
-                std::cerr << "[Error] ppForm_linear initializing :: The knots are not increasing." << std::endl;
-                exit(-1);
-            }
-        }
+        for(int i = 0; i < n; i++)
+            if(x[i] >= x[i+1])
+                error("ppForm_linear initializing :: The knots are not increasing.");
         knots = x;
         for(int i = 0; i < n; i++){
             poly.push_back( Polynomial( (x[i+1]*f[i]-x[i]*f[i+1])/(x[i+1]-x[i]), (f[i+1]-f[i])/(x[i+1]-x[i]) ) );
@@ -166,7 +157,7 @@ public:
         ppForm_cubic(x, f, "natural") {}
 
     ppForm_cubic(const int &n, const double &l, const double &r, Function & func, const std::string &bondary){
-        vector<double> t(n);
+        std::vector<double> t(n);
         for(int i = 0; i < n; i++)
             t[i] = l + (r-l)*i/(n-1);
         (*this) = ppForm_cubic(t, func, bondary);

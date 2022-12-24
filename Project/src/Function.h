@@ -2,6 +2,8 @@
 #define _FUNCTION_H_
 
 #include <limits>
+#include <iostream>
+#include <cstring>
 
 const double _epsL = 10 * std::numeric_limits<double>::epsilon();
 
@@ -18,5 +20,10 @@ public:
         return ((*this)(x+2*_epsL)+(*this)(x-2*_epsL)-2*(*this)(x)) / (4*_epsL*_epsL);
     }
 };
+
+void error(const std::string & errcode){
+    std::cerr << "[Error] " << errcode << std::endl;
+    exit(-1);
+}
 
 #endif

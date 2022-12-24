@@ -32,7 +32,7 @@ public:
     BSpline_base(const BSpline_base & rhs):
         coef(rhs.coef), knots(rhs.knots) {}
 
-    double operator () (const double &x){
+    double operator () (const double &x) const{
         double ans = 0.0;
         for(int i = 0; i < coef.size(); i++)
             ans += coef[i] * B(i+1, x);
@@ -74,6 +74,8 @@ private:
     }
 
 public:
+    BSpline_cubic(){}
+
     BSpline_cubic(const vector<double> & t, const vector<double> & f, const std::string &bondary){
         knots.clear();
         knots.push_back(t.front()-3.0);
