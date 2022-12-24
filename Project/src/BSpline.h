@@ -29,6 +29,7 @@ protected:
 
 public:
     BSpline_base(){}
+
     BSpline_base(const BSpline_base & rhs):
         coef(rhs.coef), knots(rhs.knots) {}
 
@@ -43,8 +44,17 @@ public:
 class BSpline_linear : public BSpline_base{
 private:
     using BSpline_base::B;
+    using BSpline_base::dB;
+    using BSpline_base::d2B;
     double B(const int &i, const double &x) const{
         return B(i, 1, x);
+    }
+    //注意：一阶样条中，下面定义的导函数没有意义，也不会用到，但是父类的纯虚函数必须定义，否则构造函数会报错
+    double dB(const int &i, const double &x) const{
+        return dB(i, 1, x);
+    }
+    double d2B(const int &i, const double &x) const{
+        return d2B(i, 1, x);
     }
 
 public:
@@ -54,6 +64,89 @@ public:
         for(auto & x : t) knots.push_back(x);
         knots.push_back(t.back()+1.0);
         coef = f;
+    }
+
+    BSpline_linear(const vector<double> &x, Function & func){
+        vector<double> f;
+        for(auto & xv : x) f.push_back(func(xv));
+        (*this) = BSpline_linear(x, f);
+    }
+
+    BSpline_linear(const int &n, const double &l, const double &r, Function &func){
+        vector<double> t(n);
+        for(int i = 0; i < n; i++)
+            t[i] = l + (r-l)*i/(n-1);
+        (*this) = BSpline_linear(t, func);
+    }
+};
+
+class BSpline_quadratic : public BSpline_base{
+private:
+    using BSpline_base::B;
+    using BSpline_base::dB;
+    using BSpline_base::d2B;
+    
+    double B(const int &i, const double &x) const{
+        return B(i, 2, x);
+    }
+    double dB(const int &i, const double &x) const{
+        return dB(i, 2, x);
+    }
+    //注意：二阶样条中，下面定义的二阶导函数没有意义，也不会用到，但是父类的纯虚函数必须定义，否则构造函数会报错
+    double d2B(const int &i, const double &x) const{
+        return d2B(i, 2, x);
+    }
+
+public:
+    BSpline_quadratic(const vector<double> & t, const vector<double> & f){
+        for(int i = 0; i < t.size()-1; i++)
+            if(t[i] >= t[i+1]) error("BSpline_quadratic :: the knots must be strictly increasing!");
+        
+        knots.clear();
+        knots.push_back(t.front()-2.0);
+        knots.push_back(t.front()-1.0);
+        for(auto & x : t) knots.push_back(x);
+        knots.push_back(t.back()+1.0);
+        knots.push_back(t.back()+2.0);
+
+        if(f.size() != t.size()+1)
+            error("BSpline_quadradic :: Wrong size of vector<double> f!");
+        Matrix A(t.size()+1);
+        ColVector b(t.size()+1);
+        A[0][0] = B(1, t.front());
+        A[0][1] = B(2, t.front());
+        b[0] = f.front();
+        for(int i = 0; i < t.size()-1; i++){
+            double m = (t[i] + t[i+1]) / 2;
+            A[i+1][i] = B(i+1, m);
+            A[i+1][i+1] = B(i+2, m);
+            A[i+1][i+2] = B(i+3, m);
+            b[i+1] = f[i+1];
+        }
+        A[t.size()][t.size()-1] = B(t.size(), t.back());
+        A[t.size()][t.size()] = B(t.size()+1, t.back());
+        b[t.size()] = f.back();
+
+        ColVector res = solve(A, b);
+        coef.clear();
+        for(int i = 0; i <= t.size(); i++)
+            coef.push_back(res[i]);
+    }
+
+    BSpline_quadratic(const vector<double> &x, Function & func){
+        vector<double> f;
+        f.push_back(func(x.front()));
+        for(int i = 0; i < x.size()-1; i++)
+            f.push_back( func( (x[i]+x[i+1])/2 ) );
+        f.push_back(func(x.back()));
+        (*this) = BSpline_quadratic(x, f);
+    }
+
+    BSpline_quadratic(const int &n, const double &l, const double &r, Function &func){
+        vector<double> t(n);
+        for(int i = 0; i < n; i++)
+            t[i] = l + (r-l)*i/(n-1);
+        (*this) = BSpline_quadratic(t, func);
     }
 };
 
@@ -77,6 +170,9 @@ public:
     BSpline_cubic(){}
 
     BSpline_cubic(const vector<double> & t, const vector<double> & f, const std::string &bondary){
+        for(int i = 0; i < t.size()-1; i++)
+            if(t[i] >= t[i+1]) error("BSpline_cubic :: the knots must be strictly increasing!");
+        
         knots.clear();
         knots.push_back(t.front()-3.0);
         knots.push_back(t.front()-2.0);
@@ -86,6 +182,8 @@ public:
         knots.push_back(t.back()+2.0);
         knots.push_back(t.back()+3.0);
 
+        if(f.size() < t.size())
+            error("BSpline_cubic :: Too small size of vector<double> f!");
         Matrix A(t.size()+2);
         ColVector b(t.size()+2);
         for(int i = 0; i < t.size(); i++){
@@ -102,6 +200,8 @@ public:
             b[t.size()] = 0;
             b[t.size()+1] = 0;
         } else if(bondary == "complete"){
+            if(f.size() < t.size()+2)
+                error("BSpline_cubic :: Cannot read derivatives at ends in vector<double> f!");
             for(int j = 0; j < 3; j++){
                 A[t.size()][j] = dB(1+j, t.front());
                 A[t.size()+1][t.size()-1+j] = dB(t.size()+j, t.back());
@@ -109,6 +209,8 @@ public:
             b[t.size()] = f[t.size()];
             b[t.size()+1] = f[t.size()+1];
         } else if(bondary == "second-derivatives-at-end"){
+            if(f.size() < t.size()+2)
+                error("BSpline_cubic :: Cannot read second-derivatives at ends in vector<double> f!");
             for(int j = 0; j < 3; j++){
                 A[t.size()][j] = d2B(1+j, t.front());
                 A[t.size()+1][t.size()-1+j] = d2B(t.size()+j, t.back());
@@ -116,6 +218,8 @@ public:
             b[t.size()] = f[t.size()];
             b[t.size()+1] = f[t.size()+1];
         } else if(bondary == "periodic"){
+            if(f.front() != f.back())
+                error("BSpline_cubic :: The left value and right value are not the same in boundary 'periodic'!");
             for(int j = 0; j < 3; j++){
                 A[t.size()][j] = dB(1+j, t.front());
                 A[t.size()][t.size()-1+j] = -dB(t.size()+j, t.back());
@@ -159,6 +263,51 @@ public:
 
     BSpline_cubic(const int &n, const double &l, const double &r, Function & func):
         BSpline_cubic(n, l, r, func, "natural") {}
+};
+
+struct Point{
+    double x, y;
+};
+double dist(const Point &a, const Point &b){
+    return sqrt( (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) );
+}
+
+class Curve{
+private:
+    int n;
+    BSpline_cubic fx, fy;
+
+public:
+    Curve() : n(0) {}
+    Curve(const vector<double> &x, const vector<double> &y, const std::string & bondary){
+        if(x.size() != y.size()) error("Curve :: vector x and y must be the same length!");
+        n = x.size();
+        vector<double> t;
+        for(int i = 0; i < x.size(); i++)
+            t.push_back(i);
+        fx = BSpline_cubic(t, x, bondary);
+        fy = BSpline_cubic(t, y, bondary);        
+    }
+
+    Point operator () (const double &t){
+        if(t < 0 || t > 1) error("Curve :: Out of range [0,1]!");
+        if(n == 0) error("Curve :: Visited operator () at an empty curve!");
+        return (Point){fx(t*(n-1)), fy(t*(n-1))};
+    }
+
+    friend std::ostream & operator << (std::ostream & out, const Curve &rhs){
+        static int cnt = 0;
+        cnt++;
+        out << "x" << cnt << " = [ ";
+        for(double i = 0; i <= rhs.n-1; i += 0.01)
+            out << rhs.fx(i) << " ";
+        out << "];" << std::endl;
+        out << "y" << cnt << " = [ ";
+        for(double i = 0; i <= rhs.n-1; i += 0.01)
+            out << rhs.fy(i) << " ";
+        out << "];" << std::endl;
+        return out;
+    }
 };
 
 #endif
