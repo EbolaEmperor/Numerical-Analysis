@@ -19,11 +19,6 @@ protected:
 public:
     ppForm_base() {}
 
-    ppForm_base(const int &n): n(n){
-        knots.resize(n+1);
-        poly.resize(n);
-    }
-
     ppForm_base(const ppForm_base &rhs):
         n(rhs.n), knots(rhs.knots), poly(rhs.poly) {}
     
@@ -52,6 +47,19 @@ public:
         for(int i = 0; i < n; i++){
             poly.push_back( Polynomial( (x[i+1]*f[i]-x[i]*f[i+1])/(x[i+1]-x[i]), (f[i+1]-f[i])/(x[i+1]-x[i]) ) );
         }
+    }
+
+    ppForm_linear(const std::vector<double> &x, Function & func){
+        std::vector<double> f;
+        for(auto & xv : x) f.push_back(func(xv));
+        (*this) = ppForm_linear(x, f);
+    }
+
+    ppForm_linear(const int &n, const double &l, const double &r, Function &func){
+        std::vector<double> t(n);
+        for(int i = 0; i < n; i++)
+            t[i] = l + (r-l)*i/(n-1);
+        (*this) = ppForm_linear(t, func);
     }
 };
 

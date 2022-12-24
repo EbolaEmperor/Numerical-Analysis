@@ -87,6 +87,15 @@ public:
         return res;
     }
 
+    T_Polynomial operator - (const T_Polynomial &rhs){
+        T_Polynomial res(*this);
+        res.n = std::max(res.n, rhs.n);
+        res.coef.resize(res.n + 1);
+        for(int i = 0; i <= rhs.n; i++)
+            res.coef[i] -= rhs.coef[i];
+        return res;
+    }
+
     T_Polynomial operator * (const T &rhs){
         T_Polynomial res;
         res.n = n;

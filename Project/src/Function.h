@@ -12,11 +12,11 @@ class Function{
 public:
     virtual double operator () (const double &x) const = 0;
 
-    virtual double diff (const double &x) const{
+    double diff (const double &x) const{
         return ((*this)(x+_epsL)-(*this)(x-_epsL)) / (2*_epsL);
     }
 
-    virtual double diff2 (const double &x) const{
+    double diff2 (const double &x) const{
         return ((*this)(x+2*_epsL)+(*this)(x-2*_epsL)-2*(*this)(x)) / (4*_epsL*_epsL);
     }
 };
