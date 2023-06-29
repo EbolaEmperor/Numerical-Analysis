@@ -57,8 +57,9 @@ public:
 
     ppForm_linear(const int &n, const double &l, const double &r, Function &func){
         std::vector<double> t(n);
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n-1; i++)
             t[i] = l + (r-l)*i/(n-1);
+        t.back() = r;
         (*this) = ppForm_linear(t, func);
     }
 };
@@ -177,8 +178,9 @@ public:
 
     ppForm_cubic(const int &n, const double &l, const double &r, Function & func, const std::string &bondary){
         std::vector<double> t(n);
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n-1; i++)
             t[i] = l + (r-l)*i/(n-1);
+        t.back() = r;
         (*this) = ppForm_cubic(t, func, bondary);
     }
 

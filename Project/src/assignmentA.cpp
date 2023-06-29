@@ -1,4 +1,4 @@
-#include "ppForm.h"
+#include "BSpline.h"
 using namespace std;
 
 // Runge函数
@@ -10,11 +10,14 @@ public:
     double diff (const double &x) const{
         return -50.0*x/pow(1.0+25*x*x,2);
     }
+    double diff2 (const double &x) const{
+        return ( 5000*x*x - 50*(1+25*x*x) ) / pow(1+25*x*x, 3);
+    }
 } runge;
 
 int main(int argc, char * argv[]){
     const int n = atoi(argv[1]);
-    ppForm_cubic pp(n, -1, 1+1e-14, runge, "complete");
+    BSpline_cubic pp(n, -1, 1, runge, "natural");
     cout << "y1 = [ ";
     for(double x = -1; x <= 1.001; x += 0.01)
         cout << pp(x) << " ";

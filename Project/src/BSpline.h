@@ -74,8 +74,9 @@ public:
 
     BSpline_linear(const int &n, const double &l, const double &r, Function &func){
         vector<double> t(n);
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n-1; i++)
             t[i] = l + (r-l)*i/(n-1);
+        t.back() = r;
         (*this) = BSpline_linear(t, func);
     }
 };
@@ -144,8 +145,9 @@ public:
 
     BSpline_quadratic(const int &n, const double &l, const double &r, Function &func){
         vector<double> t(n);
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n-1; i++)
             t[i] = l + (r-l)*i/(n-1);
+        t.back() = r;
         (*this) = BSpline_quadratic(t, func);
     }
 };
@@ -256,8 +258,9 @@ public:
 
     BSpline_cubic(const int &n, const double &l, const double &r, Function & func, const std::string &bondary){
         vector<double> t(n);
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n-1; i++)
             t[i] = l + (r-l)*i/(n-1);
+        t.back() = r;
         (*this) = BSpline_cubic(t, func, bondary);
     }
 
