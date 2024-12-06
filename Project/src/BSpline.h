@@ -13,31 +13,22 @@ class BSpline_base{
 protected:
     vector<double> coef;
     vector<double> knots;
-    double B(const int &i, const int &k, const double &x) const{
-        return k==0 ? (knots[i-1]<x && x<=knots[i]) : 
-            (x-knots[i-1])/(knots[i+k-1]-knots[i-1])*B(i,k-1,x) + (knots[i+k]-x)/(knots[i+k]-knots[i])*B(i+1,k-1,x);
-    }
-    double dB(const int &i, const int &k, const double &x) const{
-        return k*B(i, k-1, x) / (knots[i+k-1] - knots[i-1]) - k*B(i+1, k-1, x) / (knots[i+k] - knots[i]);
-    }
-    double d2B(const int &i, const int &k, const double &x) const{
-        return k*dB(i, k-1, x) / (knots[i+k-1] - knots[i-1]) - k*dB(i+1, k-1, x) / (knots[i+k] - knots[i]);
-    }
-    double d3B(const int &i, const int &k, const double &x) const{
-        return k*d2B(i, k-1, x) / (knots[i+k-1] - knots[i-1]) - k*d2B(i+1, k-1, x) / (knots[i+k] - knots[i]);
+    double B(const int &i, const int &k, const double &x, const int &ord) const{
+        if(ord == 0){
+            return k==0 ? (knots[i-1]<x && x<=knots[i]) : 
+                (x-knots[i-1])/(knots[i+k-1]-knots[i-1])*B(i,k-1,x,0) + (knots[i+k]-x)/(knots[i+k]-knots[i])*B(i+1,k-1,x,0);
+        } else {
+            return k*B(i, k-1, x, ord-1) / (knots[i+k-1] - knots[i-1]) - k*B(i+1, k-1, x, ord-1) / (knots[i+k] - knots[i]);
+        }
     }
 
     double B(const int &i, const double &x) const{
-        return B(i, order, x);
+        return B(i, order, x, 0);
     };
+
+    template<int d_ord = 1>
     double dB(const int &i, const double &x) const{
-        return dB(i, order, x);
-    };
-    double d2B(const int &i, const double &x) const{
-        return d2B(i, order, x);
-    };
-    double d3B(const int &i, const double &x) const{
-        return d2B(i, order, x);
+        return B(i, order, x, d_ord);
     };
 
 public:
@@ -80,11 +71,6 @@ public:
 };
 
 class BSpline_quadratic : public BSpline_base<2>{
-private:
-    using BSpline_base<2>::B;
-    using BSpline_base<2>::dB;
-    using BSpline_base<2>::d2B;
-
 public:
     BSpline_quadratic(const vector<double> & t, const vector<double> & f){
         for(int i = 0; i < t.size()-1; i++)
@@ -140,11 +126,6 @@ public:
 };
 
 class BSpline_cubic : public BSpline_base<3>{
-private:
-    using BSpline_base<3>::B;
-    using BSpline_base<3>::dB;
-    using BSpline_base<3>::d2B;
-
 public:
     BSpline_cubic(){}
 
@@ -173,20 +154,19 @@ public:
 
         if(bondary == "natural"){
             for(int j = 0; j < 3; j++){
-                A[t.size()][j] = d2B(1+j, t.front());
-                A[t.size()+1][t.size()-1+j] = d2B(t.size()+j, t.back());
+                A[t.size()][j] = dB<2>(1+j, t.front());
+                A[t.size()+1][t.size()-1+j] = dB<2>(t.size()+j, t.back());
             }
-            b[t.size()] = 0;
-            b[t.size()+1] = 0;
+            b[t.size()] = b[t.size()+1] = 0;
         } else if(bondary == "not-a-knot"){
             if(t.size() < 4)
                 error("BSpline_cubic :: not-a-knot condition needs at least 4 knots!");
-            for(int j = 0; j < 3; j++){
-                A[t.size()][j] = d3B(1+j, t[1]);
-                A[t.size()+1][t.size()-1+j] = d2B(t.size()+j, t[t.size()-2]);
+            
+            for(int j = 0; j < 4; j++){
+                A[t.size()][j] = dB<3>(1+j, t[1]);
+                A[t.size()+1][t.size()-3+j] = dB<3>(t.size()-2+j, t[t.size()-2]);
             }
-            b[t.size()] = 0;
-            b[t.size()+1] = 0;
+            b[t.size()] = b[t.size()+1] = 0;
         } else if(bondary == "complete"){
             if(f.size() < t.size()+2)
                 error("BSpline_cubic :: Cannot read derivatives at ends in vector<double> f!");
@@ -200,8 +180,8 @@ public:
             if(f.size() < t.size()+2)
                 error("BSpline_cubic :: Cannot read second-derivatives at ends in vector<double> f!");
             for(int j = 0; j < 3; j++){
-                A[t.size()][j] = d2B(1+j, t.front());
-                A[t.size()+1][t.size()-1+j] = d2B(t.size()+j, t.back());
+                A[t.size()][j] = dB<2>(1+j, t.front());
+                A[t.size()+1][t.size()-1+j] = dB<2>(t.size()+j, t.back());
             }
             b[t.size()] = f[t.size()];
             b[t.size()+1] = f[t.size()+1];
@@ -211,8 +191,8 @@ public:
             for(int j = 0; j < 3; j++){
                 A[t.size()][j] = dB(1+j, t.front());
                 A[t.size()][t.size()-1+j] = -dB(t.size()+j, t.back());
-                A[t.size()+1][j] = d2B(1+j, t.front());
-                A[t.size()+1][t.size()-1+j] = -d2B(t.size()+j, t.back());
+                A[t.size()+1][j] = dB<2>(1+j, t.front());
+                A[t.size()+1][t.size()-1+j] = -dB<2>(t.size()+j, t.back());
             }
             b[t.size()] = b[t.size()+1] = 0;
         }

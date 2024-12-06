@@ -2,7 +2,7 @@
 
 using std::cout;
 using std::endl;
-const double pi = acos(-1);
+const double pi = M_PI;
 
 // Runge函数
 class Runge : public Function{
@@ -18,8 +18,8 @@ class Runge : public Function{
 } runge;
 
 int main(){
-    const int n = 11;
-    const double xvalue[] = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
+    const int n = 7;
+    const double xvalue[] = {-5, -3, -1, 0, 1, 3, 5};
     std::vector<double> x(xvalue, xvalue + n);
 
     BSpline_cubic ppc_natural(x, runge, "natural");
@@ -36,15 +36,22 @@ int main(){
     }
     cout << "];" << endl;
 
-    BSpline_cubic ppc_secd(x, runge, "second-derivatives-at-end");
+    BSpline_cubic ppc_nak(x, runge, "not-a-knot");
     cout << "y3 = [";
+    for(double x = xvalue[0]; x <= xvalue[n-1]; x += 0.01){
+        cout << ppc_nak(x) << " ";
+    }
+    cout << "];" << endl;
+
+    BSpline_cubic ppc_secd(x, runge, "second-derivatives-at-end");
+    cout << "y4 = [";
     for(double x = xvalue[0]; x <= xvalue[n-1]; x += 0.01){
         cout << ppc_secd(x) << " ";
     }
     cout << "];" << endl;
 
     BSpline_cubic ppc_peri(x, runge, "periodic");
-    cout << "y4 = [";
+    cout << "y5 = [";
     for(double x = xvalue[0]; x <= xvalue[n-1]; x += 0.01){
         cout << ppc_peri(x) << " ";
     }
