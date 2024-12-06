@@ -1,4 +1,4 @@
-#ifndef _POLYNIMIAL_H_
+#ifndef _POLYNOMIAL_H_
 #define _POLYNOMIAL_H_
 
 #include <vector>

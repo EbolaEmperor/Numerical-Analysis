@@ -4,8 +4,8 @@
 #include <vector>
 using namespace std;
 
-const double sq3 = sqrt(3);
-const double pi = acos(-1);
+const double sq3 = sqrt(3.0);
+const double pi = M_PI;
 const double eps = 1e-16;
 
 class Heart{
@@ -22,8 +22,8 @@ public:
     }
 } cur;
 
-const double L = -0.5*pi;
-const double R = 1.5*pi;
+const double L = -1.5*pi;
+const double R = 0.5*pi;
 const double len = cur.length(L,R);
 
 int main(int argc, char * argv[]){

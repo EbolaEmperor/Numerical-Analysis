@@ -8,6 +8,7 @@
 #include "Function.h"
 using std::vector;
 
+template<int order>
 class BSpline_base{
 protected:
     vector<double> coef;
@@ -22,10 +23,22 @@ protected:
     double d2B(const int &i, const int &k, const double &x) const{
         return k*dB(i, k-1, x) / (knots[i+k-1] - knots[i-1]) - k*dB(i+1, k-1, x) / (knots[i+k] - knots[i]);
     }
+    double d3B(const int &i, const int &k, const double &x) const{
+        return k*d2B(i, k-1, x) / (knots[i+k-1] - knots[i-1]) - k*d2B(i+1, k-1, x) / (knots[i+k] - knots[i]);
+    }
 
-    virtual double B(const int &i, const double &x) const = 0;
-    virtual double dB(const int &i, const double &x) const = 0;
-    virtual double d2B(const int &i, const double &x) const = 0;
+    double B(const int &i, const double &x) const{
+        return B(i, order, x);
+    };
+    double dB(const int &i, const double &x) const{
+        return dB(i, order, x);
+    };
+    double d2B(const int &i, const double &x) const{
+        return d2B(i, order, x);
+    };
+    double d3B(const int &i, const double &x) const{
+        return d2B(i, order, x);
+    };
 
 public:
     BSpline_base(){}
@@ -41,22 +54,7 @@ public:
     }
 };
 
-class BSpline_linear : public BSpline_base{
-private:
-    using BSpline_base::B;
-    using BSpline_base::dB;
-    using BSpline_base::d2B;
-    double B(const int &i, const double &x) const{
-        return B(i, 1, x);
-    }
-    //注意：一阶样条中，下面定义的导函数没有意义，也不会用到，但是父类的纯虚函数必须定义，否则构造函数会报错
-    double dB(const int &i, const double &x) const{
-        return dB(i, 1, x);
-    }
-    double d2B(const int &i, const double &x) const{
-        return d2B(i, 1, x);
-    }
-
+class BSpline_linear : public BSpline_base<1>{
 public:
     BSpline_linear(const vector<double> & t, const vector<double> & f){
         knots.clear();
@@ -81,22 +79,11 @@ public:
     }
 };
 
-class BSpline_quadratic : public BSpline_base{
+class BSpline_quadratic : public BSpline_base<2>{
 private:
-    using BSpline_base::B;
-    using BSpline_base::dB;
-    using BSpline_base::d2B;
-    
-    double B(const int &i, const double &x) const{
-        return B(i, 2, x);
-    }
-    double dB(const int &i, const double &x) const{
-        return dB(i, 2, x);
-    }
-    //注意：二阶样条中，下面定义的二阶导函数没有意义，也不会用到，但是父类的纯虚函数必须定义，否则构造函数会报错
-    double d2B(const int &i, const double &x) const{
-        return d2B(i, 2, x);
-    }
+    using BSpline_base<2>::B;
+    using BSpline_base<2>::dB;
+    using BSpline_base<2>::d2B;
 
 public:
     BSpline_quadratic(const vector<double> & t, const vector<double> & f){
@@ -152,21 +139,11 @@ public:
     }
 };
 
-class BSpline_cubic : public BSpline_base{
+class BSpline_cubic : public BSpline_base<3>{
 private:
-    using BSpline_base::B;
-    using BSpline_base::dB;
-    using BSpline_base::d2B;
-    
-    double B(const int &i, const double &x) const{
-        return B(i, 3, x);
-    }
-    double dB(const int &i, const double &x) const{
-        return dB(i, 3, x);
-    }
-    double d2B(const int &i, const double &x) const{
-        return d2B(i, 3, x);
-    }
+    using BSpline_base<3>::B;
+    using BSpline_base<3>::dB;
+    using BSpline_base<3>::d2B;
 
 public:
     BSpline_cubic(){}
@@ -201,6 +178,15 @@ public:
             }
             b[t.size()] = 0;
             b[t.size()+1] = 0;
+        } else if(bondary == "not-a-knot"){
+            if(t.size() < 4)
+                error("BSpline_cubic :: not-a-knot condition needs at least 4 knots!");
+            for(int j = 0; j < 3; j++){
+                A[t.size()][j] = d3B(1+j, t[1]);
+                A[t.size()+1][t.size()-1+j] = d2B(t.size()+j, t[t.size()-2]);
+            }
+            b[t.size()] = 0;
+            b[t.size()+1] = 0;
         } else if(bondary == "complete"){
             if(f.size() < t.size()+2)
                 error("BSpline_cubic :: Cannot read derivatives at ends in vector<double> f!");
@@ -220,8 +206,8 @@ public:
             b[t.size()] = f[t.size()];
             b[t.size()+1] = f[t.size()+1];
         } else if(bondary == "periodic"){
-            if(f.front() != f.back())
-                error("BSpline_cubic :: The left value and right value are not the same in boundary 'periodic'!");
+            if(fabs(f.front() - f.back()) > 1e-14)
+                std::cerr << "[Warning] BSpline_cubic :: The gap between left value and right value are larger than 1e-14 in boundary 'periodic'!" << std::endl;
             for(int j = 0; j < 3; j++){
                 A[t.size()][j] = dB(1+j, t.front());
                 A[t.size()][t.size()-1+j] = -dB(t.size()+j, t.back());
@@ -289,7 +275,7 @@ public:
         for(int i = 0; i < x.size(); i++)
             t.push_back(i);
         fx = BSpline_cubic(t, x, bondary);
-        fy = BSpline_cubic(t, y, bondary);        
+        fy = BSpline_cubic(t, y, bondary);
     }
 
     Point operator () (const double &t){
@@ -302,11 +288,11 @@ public:
         static int cnt = 0;
         cnt++;
         out << "x" << cnt << " = [ ";
-        for(double i = 0; i <= rhs.n-1; i += 0.01)
+        for(double i = 0; i <= rhs.n - 1 + 1e-3; i += 0.01)
             out << rhs.fx(i) << " ";
         out << "];" << std::endl;
         out << "y" << cnt << " = [ ";
-        for(double i = 0; i <= rhs.n-1; i += 0.01)
+        for(double i = 0; i <= rhs.n - 1 + 1e-3; i += 0.01)
             out << rhs.fy(i) << " ";
         out << "];" << std::endl;
         return out;
