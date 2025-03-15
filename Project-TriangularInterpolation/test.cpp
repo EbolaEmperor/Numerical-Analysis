@@ -1,5 +1,6 @@
 #include "TriangularInterpolation.h"
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 int main(){
@@ -8,10 +9,10 @@ int main(){
     TriangularInterpolator func;
     func.fit(x);
     func.save("data/sample.model");
-    func.discreteOutput("data/sample.out", 128);
+    func.discreteOutput("data/sample.out", 256);
 
     Vector rx = func.recover();
-    cout << "recover test: " << endl;
+    cout << "Recover test: " << endl;
     for(int i = 0; i < rx.size(); i++)
         cout << rx[i] << " ";
     cout << endl << endl;
@@ -19,9 +20,12 @@ int main(){
     TriangularInterpolator refunc;
     refunc.load("data/sample.model");
     rx = refunc.recover();
-    cout << "load and recover test: " << endl;
+    cout << "Load and recover test: " << endl;
     for(int i = 0; i < rx.size(); i++)
         cout << rx[i] << " ";
     cout << endl;
+    cout << endl << "Run the following command in gnuplot to see the fitted curve:" << endl << endl;
+    cout << "   plot \"data/sample.out\" w l title \"fited curve\",\\" << endl
+         << "        \"data/input.gnuplot_in\" w p pt 6 title \"input data\"" << endl << endl;
     return 0;
 }
