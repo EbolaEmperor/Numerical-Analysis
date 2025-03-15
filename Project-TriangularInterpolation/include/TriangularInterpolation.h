@@ -23,6 +23,7 @@ private:
 public:
     double at(const double &t) const;
     void fit(const Vector &x);
+    void filter(const int &cutoff);
     Vector recover() const;
     void load(const std::string& fname);
     void save(const std::string& fname) const;

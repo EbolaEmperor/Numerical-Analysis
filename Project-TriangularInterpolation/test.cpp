@@ -25,7 +25,7 @@ int main(){
         cout << rx[i] << " ";
     cout << endl;
     cout << endl << "Run the following command in gnuplot to see the fitted curve:" << endl << endl;
-    cout << "   plot \"data/sample.out\" w l title \"fited curve\",\\" << endl
+    cout << "   plot \"data/sample.out\" w l title \"fitted curve\",\\" << endl
          << "        \"data/input.gnuplot_in\" w p pt 6 title \"input data\"" << endl << endl;
     return 0;
 }

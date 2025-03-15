@@ -63,11 +63,22 @@ vector<Complex> TriangularInterpolator::fft(const vector<Complex> &in_a, const i
 double TriangularInterpolator::at(const double &t) const{
     const int n = coef.size();
     static const double pi = acos(-1);
-    double res = 0;
-    for(int k = 0; k < n; k++){
-        res += coef[k].real() * cos(2*pi*k*t) - coef[k].imag() * sin(2*pi*k*t);
+    double res = coef[0].real();
+    for(int k = 1; k < n / 2; k++){
+        res += (coef[k] + coef[n - k]).real() * cos(2*pi*k*t)
+             - (coef[k] - coef[n - k]).imag() * sin(2*pi*k*t);
     }
+    res += coef[n / 2].real() * cos(pi*n*t);
     return res / n;
+}
+
+void TriangularInterpolator::filter(const int &cutoff){
+    const int n = coef.size();
+    if(cutoff >= n/2 - 2) return;
+    coef.erase(coef.begin() + n / 2 + 1, coef.begin() + n - cutoff - 1);
+    coef.erase(coef.begin() + cutoff + 2, coef.begin() + n / 2);
+    for(auto &x : coef)
+        x = x / (double)n * (double)coef.size();
 }
 
 void TriangularInterpolator::fit(const Vector &x){
