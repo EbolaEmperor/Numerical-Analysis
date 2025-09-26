@@ -51,6 +51,25 @@ enum class LineType {
   Custom = -1       // 自定义（通过 dashtype 字符串）
 };
 
+// 点型枚举，对应 gnuplot 的 pointtype
+enum class PointType {
+  Default = 0,      // 默认点型
+  Plus = 1,         // +
+  Cross = 2,        // x
+  Star = 3,         // *
+  Square = 4,       // 空心方形
+  FilledSquare = 5, // 实心方形
+  Circle = 6,       // 空心圆形
+  FilledCircle = 7, // 实心圆形
+  Triangle = 8,     // 空心三角形
+  FilledTriangle = 9, // 实心三角形
+  Diamond = 10,     // 空心菱形
+  FilledDiamond = 11, // 实心菱形
+  Pentagon = 12,    // 空心五边形
+  FilledPentagon = 13, // 实心五边形
+  Custom = -1       // 自定义点型
+};
+
 // 预定义的 dashtype 字符串
 namespace DashTypes {
   const std::string Solid = "";
@@ -67,7 +86,8 @@ template <typename Ix, typename Iy, typename Iz>
 struct PlottingItem {
   using value_type = typename Ix::value_type;
   PlottingItem(PlottingType pt, Ix startX, Ix endX, Iy startY, std::string name)
-      : startX(startX), endX(endX), startY(startY), plotType(pt), name(name), lineType(LineType::Solid), lineWidth(0) {}
+      : startX(startX), endX(endX), startY(startY), plotType(pt), name(name), 
+        lineType(LineType::Solid), lineWidth(0), pointType(PointType::Default), customPointType(-1), pointSize(0) {}
   PlottingItem(PlottingType pt,
                Ix startX,
                Ix endX,
@@ -81,7 +101,10 @@ struct PlottingItem {
         plotType(pt),
         name(name),
         lineType(LineType::Solid),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   PlottingItem(PlottingType pt,
                Ix startX,
                Ix endX,
@@ -95,7 +118,10 @@ struct PlottingItem {
         name(name),
         options(options),
         lineType(LineType::Solid),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   PlottingItem(PlottingType pt,
                Ix startX,
                Ix endX,
@@ -111,7 +137,10 @@ struct PlottingItem {
         name(name),
         options(options),
         lineType(LineType::Solid),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   // 支持线型的构造函数
   PlottingItem(PlottingType pt,
                Ix startX,
@@ -125,7 +154,10 @@ struct PlottingItem {
         plotType(pt),
         name(name),
         lineType(lt),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   PlottingItem(PlottingType pt,
                Ix startX,
                Ix endX,
@@ -140,7 +172,10 @@ struct PlottingItem {
         name(name),
         options(options),
         lineType(lt),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   // 支持线宽的构造函数
   PlottingItem(PlottingType pt,
                Ix startX,
@@ -155,7 +190,10 @@ struct PlottingItem {
         plotType(pt),
         name(name),
         lineType(lt),
-        lineWidth(lw) {}
+        lineWidth(lw),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
   PlottingItem(PlottingType pt,
                Ix startX,
                Ix endX,
@@ -171,7 +209,44 @@ struct PlottingItem {
         name(name),
         options(options),
         lineType(lt),
-        lineWidth(lw) {}
+        lineWidth(lw),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
+  // 支持点型的构造函数
+  PlottingItem(PlottingType pt,
+               Ix startX,
+               Ix endX,
+               Iy startY,
+               std::string name,
+               PointType pt_type)
+      : startX(startX),
+        endX(endX),
+        startY(startY),
+        plotType(pt),
+        name(name),
+        lineType(LineType::Solid),
+        lineWidth(0),
+        pointType(pt_type),
+        customPointType(-1),
+        pointSize(0) {}
+  PlottingItem(PlottingType pt,
+               Ix startX,
+               Ix endX,
+               Iy startY,
+               std::string name,
+               PointType pt_type,
+               double ps)
+      : startX(startX),
+        endX(endX),
+        startY(startY),
+        plotType(pt),
+        name(name),
+        lineType(LineType::Solid),
+        lineWidth(0),
+        pointType(pt_type),
+        customPointType(-1),
+        pointSize(ps) {}
   // 支持自定义 dashtype 的构造函数
   PlottingItem(PlottingType pt,
                Ix startX,
@@ -188,7 +263,10 @@ struct PlottingItem {
         options(options),
         lineType(LineType::Custom),
         customDashType(customDash),
-        lineWidth(0) {}
+        lineWidth(0),
+        pointType(PointType::Default),
+        customPointType(-1),
+        pointSize(0) {}
 
   const char* GetTypeStr() const {
     if (plotType == PlottingType::Points)
@@ -219,6 +297,23 @@ struct PlottingItem {
     return "";
   }
 
+  std::string GetPointTypeStr() const {
+    if (pointType == PointType::Custom && customPointType >= 0) {
+      return "pt " + std::to_string(customPointType);
+    }
+    if (pointType != PointType::Default) {
+      return "pt " + std::to_string(static_cast<int>(pointType));
+    }
+    return "";
+  }
+
+  std::string GetPointSizeStr() const {
+    if (pointSize > 0) {
+      return "ps " + std::to_string(pointSize);
+    }
+    return "";
+  }
+
   Ix startX;
   Ix endX;
   Iy startY;
@@ -229,6 +324,9 @@ struct PlottingItem {
   LineType lineType;
   std::string customDashType;
   double lineWidth;
+  PointType pointType;
+  int customPointType;
+  double pointSize;
 };
 
 template <typename Ix, typename Iy>
@@ -305,6 +403,29 @@ auto Points(Ix startX,
             std::string options = {}) {
   return PlottingItem<Ix, Iy, int>(PlottingType::Points, startX, endX, startY,
                                                          name, options, lineType);
+}
+
+template <typename Ix, typename Iy>
+auto Points(Ix startX,
+            Ix endX,
+            Iy startY,
+            std::string name,
+            PointType pointType,
+            std::string options = {}) {
+  return PlottingItem<Ix, Iy, int>(PlottingType::Points, startX, endX, startY,
+                                                         name, pointType);
+}
+
+template <typename Ix, typename Iy>
+auto Points(Ix startX,
+            Ix endX,
+            Iy startY,
+            std::string name,
+            PointType pointType,
+            double pointSize,
+            std::string options = {}) {
+  return PlottingItem<Ix, Iy, int>(PlottingType::Points, startX, endX, startY,
+                                                         name, pointType, pointSize);
 }
 
 template <typename Ix, typename Iy, typename Iz>
@@ -510,6 +631,18 @@ class Plot {
     std::string lineWidthStr = item.GetLineWidthStr();
     if (!lineWidthStr.empty()) {
       cmd << " " << lineWidthStr;
+    }
+    
+    // 添加点型支持
+    std::string pointTypeStr = item.GetPointTypeStr();
+    if (!pointTypeStr.empty()) {
+      cmd << " " << pointTypeStr;
+    }
+    
+    // 添加点大小支持
+    std::string pointSizeStr = item.GetPointSizeStr();
+    if (!pointSizeStr.empty()) {
+      cmd << " " << pointSizeStr;
     }
     
     if (!item.options.empty()) {
