@@ -33,6 +33,17 @@ public:
         d = Q.colPivHouseholderQr().solve(f);
     }
 
+    ArnoldiInterp(const std::vector<double> &_x,
+                  const std::vector<double> &_f) {
+        int n = _x.size() - 1;
+        VectorXd x(n + 1), f(n + 1);
+        for(int i = 0; i <= n; i++) {
+            x(i) = _x[i];
+            f(i) = _f[i];
+        }
+        *this = ArnoldiInterp(x, f);
+    }
+
     VectorXd operator () (const VectorXd &s) const {
         int M = s.size(), n = d.size() - 1;
         MatrixXd W = MatrixXd::Zero(M, n + 1);
@@ -47,6 +58,18 @@ public:
         }
 
         return W * d;
+    }
+
+    std::vector<double> operator () (const std::vector<double> &s) const {
+        int M = s.size();
+        VectorXd sv(M);
+        for(int i = 0; i < M; i++)
+            sv(i) = s[i];
+        VectorXd fv = operator()(sv);
+        std::vector<double> f(M);
+        for(int i = 0; i < M; i++)
+            f[i] = fv(i);
+        return f;
     }
 
     double operator () (const double &x) const {

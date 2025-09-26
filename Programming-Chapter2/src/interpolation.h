@@ -197,6 +197,15 @@ public:
         return ans;
     }
 
+    std::vector<T> operator() (const std::vector<T> &vx) const{
+        int m = vx.size();
+        std::vector<T> ans(m);
+        for(int i = 0; i < m; i++){
+            ans[i] = operator()(vx[i]);
+        }
+        return ans;
+    }
+
     T_Polynomial<T> standardize(){
         T_Polynomial<T> res(coef[0]), prod(1);
         for(int i = 1; i <= n; i++){
